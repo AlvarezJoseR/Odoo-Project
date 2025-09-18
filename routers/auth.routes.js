@@ -4,7 +4,7 @@ const loginSchema = require('../schemas/Auth/login.schema');
 const router = express.Router();
 const validator = require('../middleware/validate.middleware');
 
-//Customer routes
+//Auth routes
 router.post('/', validator(loginSchema), authController.login);
 
 
