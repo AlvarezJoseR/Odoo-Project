@@ -3,7 +3,7 @@ const bankAccountSchema = require('./../BankAccount/create.bankAccount.schema');
 
 const createCustomerSchema = Joi.object({
   is_company: Joi.boolean().required(),
-  company_id: Joi.number().integer().optional(),
+  company_id: Joi.number().integer().required(),
 
   name: Joi.string().required(),
 
