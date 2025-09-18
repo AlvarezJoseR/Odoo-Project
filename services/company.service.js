@@ -1,7 +1,7 @@
 const axios = require('axios');
 const URL = process.env.URL;
 
-exports.getAllCompanies= async (credentials) => {
+exports.getAllCompanies= async (credentials,  filters = []) => {
     try {
         const { db, uid, password } = credentials
         const response = await axios.post(URL, {
@@ -14,7 +14,7 @@ exports.getAllCompanies= async (credentials) => {
                     db, uid, password,
                     "res.company",
                     "search_read",
-                    [],
+                    [filters],
                 ]
             },
             id: new Date().getTime()
@@ -29,11 +29,7 @@ exports.getAllCompanies= async (credentials) => {
     }
 }
 
-/**
- *  Get the customer model fields
- * @returns Returns a list of customers field
- */
-exports.getCompanyfields = async (credentials) => {
+exports.getCompanyfields = async (credentials,) => {
     try {
          const { db, uid, password } = credentials
 

@@ -1,6 +1,7 @@
 const { error } = require('../schemas/Customer/create.customer.schema');
 const customerService = require('./../services/customers.service');
 
+
 exports.getAllCustomer = async (req, res) => {
     filters = [];
     if (req.query) {

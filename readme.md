@@ -12,3 +12,5 @@ Además, incluye una funcionalidad básica de inicio de sesión para autenticar 
 
 ### Inicio de sesión:
 - Los usuarios pueden autenticarse mediante un sistema básico de login.
+
+

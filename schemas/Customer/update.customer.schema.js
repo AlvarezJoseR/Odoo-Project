@@ -2,6 +2,7 @@ const Joi = require('joi')
 
 const createCustomerSchema = Joi.object({
   is_company: Joi.boolean(),
+  company_id: Joi.number().integer().optional(),
 
   name: Joi.string(),
 
