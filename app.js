@@ -5,12 +5,12 @@ const authRouters = require('./routers/auth.routes.js')
 const companyRouters = require('./routers/company.routes.js')
 const cookieSession = require('cookie-session');
 const app = express()
-const port = 3000
+const port = process.env.PORT;
 app.use(express.json());
 app.use(cookieSession({
     name: 'session',                  
-    keys: ['claveSecreta123'],        
-    maxAge: 60 * 60 * 1000       
+    keys: [process.env.COOKIE_SECRET_KEY],        
+    maxAge: process.env.COOKIE_LIVE_TIME       
 }));
 
 app.use('/customer', customerRouters);

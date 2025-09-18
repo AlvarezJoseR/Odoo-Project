@@ -36,7 +36,8 @@ exports.getAllCustomer = async (credentials, filters = []) => {
                             "zip",
                             "customer_rank",
                             "active",
-                            "vat"
+                            "vat",
+                            "bank_ids"
                         ]
                     }
                 ]

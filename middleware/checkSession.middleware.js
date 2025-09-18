@@ -1,8 +1,10 @@
+const { message } = require("../schemas/Customer/create.customer.schema");
+
 const checkSession = (req, res, next) => {
     if (!req.session.hasOwnProperty('user') || !req.session.user.uid) {
-        return res.status(401).send('No estás logueado. Por favor, inicia sesión.');
+        return res.status(401).json({ message: 'No estás logueado. Por favor, inicia sesión.' });
     }
-    next(); 
+    next();
 };
 
-module.exports =  checkSession;
+module.exports = checkSession;

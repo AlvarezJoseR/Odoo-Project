@@ -9,7 +9,7 @@ exports.login = async (req, res) => {
             uid: response,
             password,
         };
-        res.send('Login');
+        res.status(200).json({message: "Successful login"});
     } catch (e) {
         res.status(500).json({
             message: e.message
