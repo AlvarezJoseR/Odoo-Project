@@ -1,6 +1,6 @@
 const Joi = require('joi')
 
-const createCustomerSchema = Joi.object({
+const updateCustomerSchema = Joi.object({
   is_company: Joi.boolean(),
   company_id: Joi.number().integer().optional(),
 
@@ -22,4 +22,4 @@ const createCustomerSchema = Joi.object({
   lang: Joi.string().optional(), 
 });
 
-module.exports = createCustomerSchema ;
+module.exports = updateCustomerSchema ;

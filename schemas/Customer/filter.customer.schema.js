@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-const customerFilterSchema = Joi.object({
+const filterCustomerSchema = Joi.object({
     id: Joi.number().integer().positive(),
     name: Joi.string().trim(),
     email: Joi.string().email({ tlds: { allow: false } }),
@@ -9,9 +9,7 @@ const customerFilterSchema = Joi.object({
     is_company: Joi.boolean(),
     street: Joi.string().trim(),
     city: Joi.string().trim(),
-    state_id: Joi.number().integer().positive(),
-    country_id: Joi.number().integer().positive(),
     vat: Joi.string().trim(), 
 });
 
-module.exports = customerFilterSchema;
+module.exports = filterCustomerSchema;

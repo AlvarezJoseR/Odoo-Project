@@ -1,7 +1,7 @@
 const axios = require('axios');
 const URL = process.env.URL;
 
-exports.getAllCompanies= async (credentials,  filters = []) => {
+exports.getAllCompanies = async (credentials, filters = []) => {
     try {
         const { db, uid, password } = credentials
         const response = await axios.post(URL, {
@@ -15,6 +15,21 @@ exports.getAllCompanies= async (credentials,  filters = []) => {
                     "res.company",
                     "search_read",
                     [filters],
+                    {
+                        fields: [
+                            "name",
+                            "active",
+                            "email",
+                            "phone",
+                            "logo",
+                            "currency_id",
+                            "country_id",
+                            "state_id",
+                            "create_date",
+                            "user_ids",
+                        ]
+
+                    }
                 ]
             },
             id: new Date().getTime()
@@ -31,7 +46,7 @@ exports.getAllCompanies= async (credentials,  filters = []) => {
 
 exports.getCompanyfields = async (credentials,) => {
     try {
-         const { db, uid, password } = credentials
+        const { db, uid, password } = credentials
 
         const response = await axios.post(URL, {
             jsonrpc: "2.0",
