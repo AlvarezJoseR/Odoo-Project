@@ -15,5 +15,4 @@ exports.login = async (req, res) => {
             message: e.message
         });
     }
-
 };

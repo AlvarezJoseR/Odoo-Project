@@ -1,4 +1,3 @@
-const { message } = require('../schemas/Customer/create.customer.schema');
 const bankAccountService = require('./../services/bankAccount.service')
 exports.createBankAccount = async (req, res) => {
     try {

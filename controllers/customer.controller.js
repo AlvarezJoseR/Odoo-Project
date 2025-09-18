@@ -1,6 +1,6 @@
-const { error } = require('../schemas/Customer/create.customer.schema');
+const { message } = require('../schemas/BankAccount/create.bankAccount.schema');
 const customerService = require('./../services/customers.service');
-
+const mainService = require('./../services/main.service');
 
 exports.getAllCustomer = async (req, res) => {
     filters = [];
@@ -16,22 +16,30 @@ exports.getAllCustomer = async (req, res) => {
 };
 
 exports.getCustomerFields = async (req, res) => {
-    const response = await customerService.getCustomerfields(req.session.user);
-    res.json(response);
+    try {
+        const response = await customerService.getCustomerfields(req.session.user);
+        res.json(response);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
 };
 
 exports.createCustomer = async (req, res) => {
-    const customer_data = req.body;
+    try {
+        const customer_data = req.body;
 
-    //Create customer
-    const response = await customerService.createCustomer(req.session.user, customer_data);
+        //Create customer
+        const new_customer = await mainService.createCustomer(req.session.user, customer_data);
+        if (new_customer.hasOwnProperty('error'))
+            res.status(400).json({ error: 'creation error', message: response.error.data.message });
 
-    if (response.hasOwnProperty('error'))
-        res.status(400).json({ error: 'creation error', message: response.error.data.message });
 
-    // return new customer info
-    const new_customer = await customerService.getAllCustomer(req.session.user, [['id', "=", response]]);
-    res.json(new_customer);
+        res.json(new_customer);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
 };
 
 exports.updateCustomer = async (req, res) => {

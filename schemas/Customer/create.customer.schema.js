@@ -1,4 +1,5 @@
 const Joi = require('joi')
+const bankAccountSchema = require('./../BankAccount/create.bankAccount.schema');
 
 const createCustomerSchema = Joi.object({
   is_company: Joi.boolean().required(),
@@ -21,7 +22,8 @@ const createCustomerSchema = Joi.object({
   email: Joi.string().email().optional().allow(''),
   website: Joi.string().uri().optional().allow(''),
 
-  lang: Joi.string().optional(), 
+  lang: Joi.string().optional(),
+  bank_account: Joi.array().items(bankAccountSchema).optional()
 });
 
 module.exports = createCustomerSchema ;
