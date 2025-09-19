@@ -34,32 +34,10 @@ exports.createCustomer = async (credentials, customer_info) => {
         //Create bank account
         if (customer_info.hasOwnProperty('bank_account')) {
             for (const bank_account of customer_info.bank_account) {
-                //Prepare bank account data
-                const bank_account_data = { "acc_number": bank_account.acc_number, "partner_id": customer_id, "bank_id": 0 };
-
-                //If send bank id
-                if (bank_account.hasOwnProperty('bank_id')) {
-                    bank_account_data.bank_id = bank_account.bank_id
-                } else {
-                    //Find bank by name
-                    const bank = await bankService.getBank(credentials, [['name', 'ilike', bank_account.bank_name]]);
-                    if (bank && bank.length === 1) bank_account_data.bank_id = bank.id
-                    else {
-                        //create new bank
-                        const new_bank_id = await bankService.createBank(credentials, { "name": bank_account.bank_name });
-                        if (new_bank_id.hasOwnProperty('error'))
-                            throw new Error('bank account creation error ' + bank_account_id.error.data.message);
-                        bank_account_data.bank_id = new_bank_id
-                    }
-                }
-
-                //Create bank account
-                const bank_account_id = await bankAccountService.createBankAccount(credentials, bank_account_data);
-                if (bank_account_id.hasOwnProperty('error'))
-                    throw new Error('bank account creation error ' + bank_account_id.error.data.message);
+                bank_account.partner_id = customer_id;
+                await this.createBankAccount(credentials, bank_account);
             }
         }
-
 
         //Return new customer data
         const new_customer = await customerService.getAllCustomer(credentials, [['id', "=", customer_id]]);
@@ -183,5 +161,43 @@ exports.deleteProduct = async (credentials, customer_id) => {
 
     } catch (e) {
         throw e;
+    }
+}
+
+//BankAccount
+exports.createBankAccount = async (credentials, bank_account) => {
+    try {
+        const bank_account_data = { "acc_number": bank_account.acc_number, "partner_id": bank_account.partner_id, "bank_id": 0 };
+        //If send bank id
+        if (bank_account.hasOwnProperty('bank_id')) {
+            bank_account_data.bank_id = bank_account.bank_id
+        } else {
+            //Find bank by name
+            const bank = await bankService.getBank(credentials, [['name', 'ilike', bank_account.bank_name]]);
+            if (bank && bank.length === 1) {
+                bank_account_data.bank_id = bank[0].id;
+            }else {
+                //create new bank
+                const new_bank_id = await bankService.createBank(credentials, { "name": bank_account.bank_name });
+               
+                if (new_bank_id.hasOwnProperty('error'))
+                    throw new Error('bank account creation error ' + bank_account_id.error.data.message);
+
+                bank_account_data.bank_id = new_bank_id
+            }
+        }
+
+        //Create bank account
+        const bank_account_id = await bankAccountService.createBankAccount(credentials, bank_account_data);
+        if (bank_account_id.hasOwnProperty('error'))
+            throw new Error('bank account creation error ' + bank_account_id.error.data.message);
+
+
+        const product = await bankAccountService.getBankAccount(credentials, [['id', '=', bank_account_id]])
+        return product;
+
+    } catch (error) {
+        console.error(error.product?.data || error.message);
+        throw error;
     }
 }

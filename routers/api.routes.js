@@ -13,6 +13,7 @@ const companyValidator = require('../middleware/validateCompany.middleware.js');
 const createCustomerSchema = require('./../schemas/Customer/create.customer.schema');
 const loginSchema = require('./../schemas/Auth/login.schema');
 const createProductSchema = require('./../schemas/Product/create.product.schema.js');
+const createBankAccountSchema = require('./../schemas/BankAccount/create.bankAccount.schema.js');
 
 //Auth Routes
 router.post('/login', validator(loginSchema), mainController.login);
@@ -28,6 +29,9 @@ router.get('/customer', sessionValidator, mainController.getCustomerByFilters)
 router.post('/product', sessionValidator, validator(createProductSchema), mainController.createProduct);
 router.delete('/product/:id', sessionValidator, mainController.deleteProduct);
 router.get('/product/:id', sessionValidator, mainController.getProductById)
+
+//Bank account Routes
+router.post('/bankAccount', sessionValidator, validator(createBankAccountSchema), mainController.createBankAccount)
 
 //Models Routes
 router.get('/models', sessionValidator, mainController.getModels);
