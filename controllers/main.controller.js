@@ -163,6 +163,18 @@ exports.createBankAccount = async (req, res) => {
 
 };
 
+exports.deleteBankAccount = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const bank_account_id = req.params.id;
+        const response = await mainService.deleteBankAccount(credentials, bank_account_id);
+        res.status(200).json({ message: "Bank account deleted"});
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+};
+
 //Models
 exports.getModels = async (req, res) => {
     try {

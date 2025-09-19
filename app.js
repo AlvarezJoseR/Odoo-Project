@@ -21,7 +21,7 @@ app.use('/customer', customerRouters);
 app.use('/auth', authRouters)
 app.use('/company', companyRouters)
 app.use('/bankAccount', bankAccountRouters)
-app.use('/API', apiRoutes)
+app.use('/api', apiRoutes)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

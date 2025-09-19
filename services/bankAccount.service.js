@@ -35,6 +35,45 @@ exports.createBankAccount = async (credentials, data) => {
     }
 }
 
+exports.deleteBankAcount = async (credentials, bank_account_id) => {
+    try {
+        //Verify valid id
+        const id = parseInt(bank_account_id);
+
+        if (isNaN(id)) {
+            throw new Error('invalid ID' )
+        }
+
+        //Verify customer exists
+        const bank_account = await this.getBankAccount(credentials, [['id', "=", bank_account_id]]);
+        if (!bank_account || bank_account.length === 0) throw new Error('bank account does not exist')
+
+        //Delete Customer
+        const { db, uid, password } = credentials
+
+        const response = await axios.post(URL, {
+            jsonrpc: "2.0",
+            method: "call",
+            params: {
+                service: "object",
+                method: "execute_kw",
+                args: [
+                    db, uid, password,
+                    "res.partner.bank", "write",
+                    [[id], { active: false }]
+                ]
+            },
+            id: new Date().getTime()
+        }, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return response.data;
+
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+        throw error;
+    }
+}
 
 exports.getBankAccount = async (credentials, filters = []) => {
     try {

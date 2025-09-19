@@ -214,6 +214,16 @@ exports.createBankAccount = async (credentials, bank_account) => {
     }
 }
 
+exports.deleteBankAccount = async (credentials, bank_account_id) => {
+    try {
+        const response = await bankAccountService.deleteBankAcount(credentials, bank_account_id);
+        return (response);
+
+    } catch (e) {
+        throw e;
+    }
+}
+
 //Invoices
 exports.createInvoice = async (credentials, data) => {
     try {
