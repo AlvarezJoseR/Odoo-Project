@@ -162,3 +162,16 @@ exports.getModels = async (req, res) => {
     }
 
 };
+
+//Invoices
+exports.createInvoice = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const invoice_data = req.body;
+        const response = await mainService.createInvoice(credentials, invoice_data);
+        res.status(200).json(response);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+};

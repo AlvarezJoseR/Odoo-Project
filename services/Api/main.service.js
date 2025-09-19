@@ -7,6 +7,7 @@ const productService = require('../product.service');
 const customerService = require('../customers.service');
 const bankAccountService = require('../bankAccount.service');
 const bankService = require('../bank.service');
+const invoiceService = require('../invoice.service');
 
 //Schemas
 const createCustomerSchema = require('../../schemas/Customer/create.customer.schema');
@@ -176,10 +177,10 @@ exports.createBankAccount = async (credentials, bank_account) => {
             const bank = await bankService.getBank(credentials, [['name', 'ilike', bank_account.bank_name]]);
             if (bank && bank.length === 1) {
                 bank_account_data.bank_id = bank[0].id;
-            }else {
+            } else {
                 //create new bank
                 const new_bank_id = await bankService.createBank(credentials, { "name": bank_account.bank_name });
-               
+
                 if (new_bank_id.hasOwnProperty('error'))
                     throw new Error('bank account creation error ' + bank_account_id.error.data.message);
 
@@ -193,11 +194,42 @@ exports.createBankAccount = async (credentials, bank_account) => {
             throw new Error('bank account creation error ' + bank_account_id.error.data.message);
 
 
-        const product = await bankAccountService.getBankAccount(credentials, [['id', '=', bank_account_id]])
-        return product;
+        const bankAccount = await bankAccountService.getBankAccount(credentials, [['id', '=', bank_account_id]])
+        return bankAccount;
 
     } catch (error) {
         console.error(error.product?.data || error.message);
         throw error;
+    }
+}
+
+//Invoices
+exports.createInvoice = async (credentials, data) => {
+    try {
+
+        const invoice_data = {}
+        //Prepare invoice data
+        for (const [key, value] of Object.entries(data)) {
+            if (data.hasOwnProperty(key) && key != 'products') {
+                invoice_data[key] = value;
+            }
+        }
+
+        const invoice_id = await invoiceService.createInvoice(credentials, invoice_data);
+        if (invoice_id.hasOwnProperty('error'))
+            throw new Error('invoice creation error ' + invoice_id.error.data.message);
+
+        //add products
+        if (data.hasOwnProperty('products')) {
+            for (const product of data.products) {
+                if (!product.invoice_id) product.move_id = invoice_id;
+                await invoiceService.addProduct(credentials, product);
+            }
+        }
+
+        const invoice = await invoiceService.getInvoice(credentials, [['id', '=', invoice_id]])
+        return invoice;
+    } catch (error) {
+        throw error
     }
 }
