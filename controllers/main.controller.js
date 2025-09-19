@@ -175,6 +175,32 @@ exports.deleteBankAccount = async (req, res) => {
 
 };
 
+//Invoices
+exports.createInvoice = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const invoice_data = req.body;
+        const response = await mainService.createInvoice(credentials, invoice_data);
+        res.status(200).json(response);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+};
+
+exports.addProductInvoice = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const invoice_id = req.params.id;
+        const product_data = req.body;
+        const response = await mainService.addProductInvoice(credentials, invoice_id, product_data);
+        res.status(200).json({message: "producto agregado con exito"});
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+};
+
 //Models
 exports.getModels = async (req, res) => {
     try {
@@ -189,15 +215,3 @@ exports.getModels = async (req, res) => {
 
 };
 
-//Invoices
-exports.createInvoice = async (req, res) => {
-    try {
-        const credentials = req.session.user;
-        const invoice_data = req.body;
-        const response = await mainService.createInvoice(credentials, invoice_data);
-        res.status(200).json(response);
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-
-};

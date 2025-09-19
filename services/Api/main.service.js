@@ -254,3 +254,12 @@ exports.createInvoice = async (credentials, data) => {
         throw error
     }
 }
+
+exports.addProductInvoice = async (credentials, invoice_id, product_data) => {
+    try {
+        const response = await invoiceService.addProduct(credentials, {...product_data, move_id: invoice_id });
+       return response;
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+};

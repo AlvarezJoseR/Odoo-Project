@@ -69,6 +69,13 @@ exports.getInvoice = async (credentials, filters = []) => {
 
 exports.addProduct = async (credentials, product_invoice_data) => {
     try {
+        //Verify valid id
+        const id = parseInt(product_invoice_data.move_id);
+
+        if (isNaN(id)) {
+            throw new Error('invalid ID' )
+        }
+        product_invoice_data.move_id = id;
         const { db, uid, password } = credentials
         const response = await axios.post(URL, {
             jsonrpc: "2.0",
