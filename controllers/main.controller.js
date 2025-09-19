@@ -136,6 +136,20 @@ exports.deleteProduct = async (req, res) => {
 
 };
 
+exports.updateProduct = async (req, res) => {
+    try {
+        const credential = req.session.user;
+        const product_id = req.params.id;
+        const product_data = req.body;
+
+        const updated_product = await mainService.updateProduct(credential, product_id, product_data);
+         res.status(200).json(updated_product);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+};
+
 //Bank Accounts
 exports.createBankAccount = async (req, res) => {
     try {

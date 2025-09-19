@@ -155,12 +155,23 @@ exports.getProductById = async (credentials, product_id) => {
     }
 }
 
-exports.deleteProduct = async (credentials, customer_id) => {
+exports.deleteProduct = async (credentials, product_id) => {
     try {
-        const response = await productService.deleteProduct(credentials, customer_id);
+        const response = await productService.deleteProduct(credentials, product_id);
         return (response);
 
     } catch (e) {
+        throw e;
+    }
+}
+
+exports.updateProduct = async (credentials, product_id, product_data) => {
+    try {
+        await productService.updateProduct(credentials, product_id, product_data);
+        const response = await productService.getProducts(credentials, [['id', '=', product_id]]);
+        return (response);
+    } catch (e) {
+
         throw e;
     }
 }
