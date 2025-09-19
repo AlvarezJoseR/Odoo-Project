@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { error } = require('../schemas/BankAccount/create.bankAccount.schema');
 const URL = process.env.URL;
 
 
@@ -60,7 +61,7 @@ exports.getAllCustomer = async (credentials, filters = []) => {
  */
 exports.createCustomer = async (credentials, data) => {
     try {
-         const { db, uid, password } = credentials
+        const { db, uid, password } = credentials
         const response = await axios.post(URL, {
             jsonrpc: "2.0",
             method: "call",
@@ -98,7 +99,19 @@ exports.createCustomer = async (credentials, data) => {
  */
 exports.deleteCustomer = async (credentials, customer_id) => {
     try {
-       const { db, uid, password } = credentials
+        //Verify valid id
+        const id = parseInt(customer_id);
+
+        if (isNaN(id)) {
+            throw new error({ message: 'invalid ID' })
+        }
+
+        //Verify customer exists
+        const customer = await this.getAllCustomer(credentials, [['id', "=", customer_id]]);
+        if (!customer || customer.length === 0) throw new error({ message: 'customer does not exist' })
+
+        //Delete Customer
+        const { db, uid, password } = credentials
 
         const response = await axios.post(URL, {
             jsonrpc: "2.0",
@@ -165,7 +178,7 @@ exports.updateCustomer = async (credentials, customer_id, customer_data = {}) =>
  */
 exports.getCustomerfields = async (credentials) => {
     try {
-         const { db, uid, password } = credentials
+        const { db, uid, password } = credentials
 
         const response = await axios.post(URL, {
             jsonrpc: "2.0",

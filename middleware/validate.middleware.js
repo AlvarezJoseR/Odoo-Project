@@ -1,4 +1,4 @@
-const Joi = require('joi'); 
+const Joi = require('joi');
 
 const validate = (schema) => (req, res, next) => {
 
@@ -9,11 +9,11 @@ const validate = (schema) => (req, res, next) => {
 
     return res.status(422).json({
       message: "Validación fallida",
-      details: error.details.map(d => d.message.replace(/["']/g, '')) 
+      details: error.details.map(d => d.message.replace(/["']/g, ''))
     });
   }
 
- 
+
   req.body = value;
   next();
 };

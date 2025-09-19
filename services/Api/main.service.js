@@ -1,7 +1,7 @@
-const customerService = require('./../services/customers.service');
-const bankAccountService = require('./../services/bankAccount.service');
-const bankService = require('./../services/bank.service');
-const createCustomerSchema = require('../schemas/Customer/create.customer.schema');
+const customerService = require('../customers.service');
+const bankAccountService = require('../bankAccount.service');
+const bankService = require('../bank.service');
+const createCustomerSchema = require('../../schemas/Customer/create.customer.schema');
 
 
 exports.createCustomer = async (credentials, customer_info) => {
@@ -55,6 +55,43 @@ exports.createCustomer = async (credentials, customer_info) => {
         //Return new customer data
         const new_customer = await customerService.getAllCustomer(credentials, [['id', "=", customer_id]]);
         return (new_customer);
+
+    } catch (e) {
+        throw new Error(e);
+    }
+}
+
+exports.getCutomerById = async (credentials, customer_id) => {
+    try {
+        const response = await customerService.getAllCustomer(credentials, [['id', '=', customer_id]]);
+        return response;
+    } catch (e) {
+        throw new Error(e);
+    }
+}
+
+exports.getCutomerByFilters = async (credentials, filters) => {
+    try {
+        fetch_filters = [];
+        if (filters) {
+            for (const [key, value] of Object.entries(filters)) {
+                if (value !== undefined) {
+                    fetch_filters.push([key, 'ilike', value]);
+                }
+            }
+        }
+        const response = await customerService.getAllCustomer(credentials, fetch_filters);
+        return (response);
+
+    } catch (e) {
+        throw new Error(e);
+    }
+}
+
+exports.deleteCustomer = async (credentials, customer_id) => {
+    try {
+        const response = await customerService.deleteCustomer(credentials, customer_id);
+        return (response);
 
     } catch (e) {
         throw new Error(e);

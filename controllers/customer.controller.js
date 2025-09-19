@@ -1,6 +1,5 @@
-const { message } = require('../schemas/BankAccount/create.bankAccount.schema');
 const customerService = require('./../services/customers.service');
-const mainService = require('./../services/main.service');
+const mainService = require('./../services/Api/main.service');
 
 exports.getAllCustomer = async (req, res) => {
     filters = [];
