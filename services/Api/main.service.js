@@ -257,9 +257,32 @@ exports.createInvoice = async (credentials, data) => {
 
 exports.addProductInvoice = async (credentials, invoice_id, product_data) => {
     try {
-        const response = await invoiceService.addProduct(credentials, {...product_data, move_id: invoice_id });
-       return response;
+        const response = await invoiceService.addProduct(credentials, { ...product_data, move_id: invoice_id });
+        return response;
     } catch (e) {
-        res.status(500).json({ error: e.message });
+       throw e
     }
 };
+
+exports.deleteProductInvoice = async (credentials, product_invoice_id) => {
+    try {
+        const response = await invoiceService.deleteProductInvoice(credentials, product_invoice_id);
+        console.log(response)
+         if (response.hasOwnProperty('error'))
+            throw new Error('delete product error: ' + response.error.data.message);
+        return response;
+    } catch (e) {
+        throw e
+    }
+};
+
+exports.getInvoiceById = async (credentials, invoice_id) => {
+    try {
+        const response = await invoiceService.getInvoice(credentials, [["id", "=", invoice_id]]);
+        return response;
+    } catch (e) {
+        throw e
+    }
+};
+
+

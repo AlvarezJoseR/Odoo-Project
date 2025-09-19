@@ -73,7 +73,7 @@ exports.addProduct = async (credentials, product_invoice_data) => {
         const id = parseInt(product_invoice_data.move_id);
 
         if (isNaN(id)) {
-            throw new Error('invalid ID' )
+            throw new Error('invalid ID')
         }
         product_invoice_data.move_id = id;
         const { db, uid, password } = credentials
@@ -102,6 +102,81 @@ exports.addProduct = async (credentials, product_invoice_data) => {
         return response.data.result;
 
     } catch (error) {
+        throw error
+    }
+}
+
+exports.deleteProductInvoice = async (credentials, product_invoice_id) => {
+    try {
+        const id = parseInt(product_invoice_id);
+
+
+        if (isNaN(id)) {
+            throw new Error('invalid ID')
+        }
+        product_invoice_id = id;
+        const invoice = await this.getInvoiceByProductId(credentials, [[ "line_ids", "in", [product_invoice_id] ]]);
+        const invoiceId = invoice.id;
+        console.log(product_invoice_id);
+        const { db, uid, password } = credentials
+        const response = await axios.post(URL, {
+            jsonrpc: "2.0",
+            method: "call",
+            params: {
+                service: "object",
+                method: "execute_kw",
+                args: [
+                    db, uid, password,
+                    "account.move",
+                    "write",
+                    [[invoiceId], {
+                        "invoice_line_ids": [[2, product_invoice_id]]
+                    }]
+                ]
+            },
+            id: new Date().getTime()
+        }, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.data.hasOwnProperty('error'))
+            return response.data;
+
+        return response.data.result;
+
+    } catch (error) {
+        throw error
+    }
+}
+
+exports.getInvoiceByProductId = async (credentials, filters = []) => {
+    try {
+        const { db, uid, password } = credentials
+        const response = await axios.post(URL, {
+            jsonrpc: "2.0",
+            method: "call",
+            params: {
+                service: "object",
+                method: "execute_kw",
+                args: [
+                    db, uid, password,
+                    "account.move",
+                    "search_read",
+                    [filters],
+                    {}
+                ]
+            },
+            id: new Date().getTime()
+        }, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.data.hasOwnProperty('error'))
+            return response.data;
+
+        return response.data.result;
+
+    } catch (error) {
+
         throw error
     }
 }

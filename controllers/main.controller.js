@@ -201,6 +201,32 @@ exports.addProductInvoice = async (req, res) => {
 
 };
 
+exports.deleteProductInvoice = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const product_invoice_id = req.params.id;
+        const response = await mainService.deleteProductInvoice(credentials, product_invoice_id);
+        res.status(200).json({message: "producto eliminado de la factura con exito"});
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+};
+
+//Models
+exports.getInvoiceById = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const invoice_id = req.params.id;
+        const model = await mainService.getInvoiceById(credentials, invoice_id);
+
+        res.status(200).json(model);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+};
+
 //Models
 exports.getModels = async (req, res) => {
     try {
