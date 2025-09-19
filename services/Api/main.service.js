@@ -1,7 +1,16 @@
+//imports
+const axios = require('axios');
+const URL = process.env.URL;
+
+//Service
+const productService = require('../product.service');
 const customerService = require('../customers.service');
 const bankAccountService = require('../bankAccount.service');
 const bankService = require('../bank.service');
+
+//Schemas
 const createCustomerSchema = require('../../schemas/Customer/create.customer.schema');
+
 
 
 exports.createCustomer = async (credentials, customer_info) => {
@@ -101,11 +110,78 @@ exports.deleteCustomer = async (credentials, customer_id) => {
 exports.updateCustomer = async (credentials, customer_id, customer_data) => {
     try {
         await customerService.updateCustomer(credentials, customer_id, customer_data);
-        const response  = await customerService.getAllCustomer(credentials, [['id', '=', customer_id]]);
+        const response = await customerService.getAllCustomer(credentials, [['id', '=', customer_id]]);
         return (response);
 
     } catch (e) {
 
+        throw e;
+    }
+}
+
+
+exports.getModels = async (credentials, model) => {
+    try {
+        const { db, uid, password } = credentials
+        const response = await axios.post(URL, {
+            jsonrpc: "2.0",
+            method: "call",
+            params: {
+                service: "object",
+                method: "execute_kw",
+                args: [
+                    db, uid, password,
+                    model,
+                    "fields_get",
+                    [],
+                    { attributes: ["string", "help", "type"] }
+                ]
+            },
+            id: new Date().getTime()
+        }, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        return response.data.result;
+
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+        throw error;
+    }
+}
+
+
+// products
+exports.createProduct = async (credentials, product_data) => {
+    try {
+        const product_id = await productService.createProduct(credentials, product_data);
+        if (product_id.hasOwnProperty('error'))
+            throw new Error('product creation error ' + product.error.data.message);
+
+        const product = await productService.getProducts(credentials, [['id', '=', product_id]])
+        return product;
+
+    } catch (error) {
+        console.error(error.product?.data || error.message);
+        throw error;
+    }
+}
+
+exports.getProductById = async (credentials, product_id) => {
+    try {
+        const response = await productService.getProducts(credentials, [['id', '=', product_id]]);
+        return response;
+    } catch (e) {
+        throw e;
+    }
+}
+
+exports.deleteProduct = async (credentials, customer_id) => {
+    try {
+        const response = await productService.deleteProduct(credentials, customer_id);
+        return (response);
+
+    } catch (e) {
         throw e;
     }
 }

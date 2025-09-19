@@ -1,5 +1,4 @@
 const axios = require('axios');
-const { error } = require('../schemas/BankAccount/create.bankAccount.schema');
 const URL = process.env.URL;
 
 
@@ -152,8 +151,6 @@ exports.updateCustomer = async (credentials, customer_id, customer_data = {}) =>
 
         //Verify customer exists
         const customer = await this.getAllCustomer(credentials, [['id', "=", customer_id]]);
-        console.log(customer);
-        console.log(customer_id)
         if (!customer || customer.length === 0) throw new Error('customer does not exist')
         const { db, uid, password } = credentials
 
@@ -175,7 +172,6 @@ exports.updateCustomer = async (credentials, customer_id, customer_data = {}) =>
         }, {
             headers: { 'Content-Type': 'application/json' }
         });
-        console.log(response);
         if (response.data.hasOwnProperty('error'))
             return response.data;
         return response.data.result;

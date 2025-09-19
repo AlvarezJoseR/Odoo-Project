@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 
 //Services
 const mainService = require('./../services/Api/main.service');
-const authService = require('./../services/auth.service')
+const authService = require('./../services/auth.service');
+const { message } = require('../schemas/BankAccount/create.bankAccount.schema');
 
 
 //Auth 
@@ -55,7 +56,7 @@ exports.updateCustomer = async (req, res) => {
         const response = await mainService.updateCustomer(credentials, customer_Id, customer_data);
         res.status(200).json(response);
     } catch (e) {
-        
+
         res.status(500).json({ error: e.message });
     }
 
@@ -90,7 +91,6 @@ exports.getCustomerByFilters = async (req, res) => {
     try {
         const filters = req.query
         const credentials = req.session.user;
-        console.log(1);
         const response = await mainService.getCutomerByFilters(credentials, filters)
         res.status(500).json({ customers: response });
     } catch (e) {
@@ -99,4 +99,53 @@ exports.getCustomerByFilters = async (req, res) => {
 
 };
 
-//Providers
+//Products
+exports.createProduct = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const product_data = req.body;
+        const response = await mainService.createProduct(credentials, product_data);
+        res.status(200).json(response);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+};
+
+exports.getProductById = async (req, res) => {
+    try {
+        const product_id = req.params.id;
+        const credentials = req.session.user;
+        const response = await mainService.getProductById(credentials, product_id);
+        res.status(200).json(response);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+};
+
+exports.deleteProduct = async (req, res) => {
+    try {
+        const product_id = req.params.id;
+        const credentials = req.session.user;
+        const response = await mainService.deleteProduct(credentials, product_id);
+        res.status(200).json({ message: "Product deleted"});
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+};
+
+//Models
+exports.getModels = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const model_name = req.query.name;
+        const model = await mainService.getModels(credentials, model_name);
+
+        res.status(200).json(model);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+};
