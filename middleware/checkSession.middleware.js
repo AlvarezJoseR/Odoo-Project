@@ -11,7 +11,6 @@ const checkSession = (req, res, next) => {
         req.session.user = decoded;
         next();
     } catch (error) {
-        //console.log(error);
         return res.status(401).json({ message: 'Invalid token.' });
     }
 };

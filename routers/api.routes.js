@@ -21,7 +21,7 @@ router.post('/customer', sessionValidator, validator(createCustomerSchema),  mai
 router.put('/customer/:id', sessionValidator, companyValidator, mainController.updateCustomer)
 router.get('/customer/:id', sessionValidator, mainController.getCustomerById)
 router.get('/customer', sessionValidator, mainController.getCustomerByFilters)
-router.delete('/customer/:id', sessionValidator, mainController.getCustomerByFilters)
+router.delete('/customer/:id', sessionValidator, mainController.deleteCustomer)
 
 
 module.exports = router;

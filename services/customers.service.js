@@ -103,12 +103,12 @@ exports.deleteCustomer = async (credentials, customer_id) => {
         const id = parseInt(customer_id);
 
         if (isNaN(id)) {
-            throw new error({ message: 'invalid ID' })
+            throw new Error('invalid ID' )
         }
 
         //Verify customer exists
         const customer = await this.getAllCustomer(credentials, [['id', "=", customer_id]]);
-        if (!customer || customer.length === 0) throw new error({ message: 'customer does not exist' })
+        if (!customer || customer.length === 0) throw new Error('customer does not exist')
 
         //Delete Customer
         const { db, uid, password } = credentials
@@ -143,6 +143,18 @@ exports.deleteCustomer = async (credentials, customer_id) => {
  */
 exports.updateCustomer = async (credentials, customer_id, customer_data = {}) => {
     try {
+        //Verify valid id
+        const id = parseInt(customer_id);
+
+        if (isNaN(id)) {
+            throw new Error('invalid ID')
+        }
+
+        //Verify customer exists
+        const customer = await this.getAllCustomer(credentials, [['id', "=", customer_id]]);
+        console.log(customer);
+        console.log(customer_id)
+        if (!customer || customer.length === 0) throw new Error('customer does not exist')
         const { db, uid, password } = credentials
 
         const response = await axios.post(URL, {
@@ -155,7 +167,7 @@ exports.updateCustomer = async (credentials, customer_id, customer_data = {}) =>
                     db, uid, password,
                     "res.partner",
                     "write",
-                    [[customer_id], customer_data],
+                    [[id], customer_data],
                     {}
                 ]
             },
@@ -163,12 +175,13 @@ exports.updateCustomer = async (credentials, customer_id, customer_data = {}) =>
         }, {
             headers: { 'Content-Type': 'application/json' }
         });
+        console.log(response);
         if (response.data.hasOwnProperty('error'))
             return response.data;
         return response.data.result;
     } catch (error) {
-        console.error(error.response?.data || error.message);
-        throw new Error('Fallo en creacion');
+        
+        throw error;
     }
 }
 

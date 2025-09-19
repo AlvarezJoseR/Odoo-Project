@@ -12,14 +12,16 @@ const updateCustomerSchema = Joi.object({
   state_id: Joi.number().integer().optional(),
   country_id: Joi.number().integer().optional(),
   zip: Joi.string().optional().allow(''),
-  vat: Joi.string().optional().allow(''), 
+  vat: Joi.string().optional().allow(''),
   phone: Joi.string().optional().allow(''),
   mobile: Joi.string().optional().allow(''),
+  customer_rank: Joi.number().integer().optional(),
+  supplier_rank: Joi.number().integer().optional(),
 
   email: Joi.string().email().optional().allow(''),
   website: Joi.string().uri().optional().allow(''),
 
-  lang: Joi.string().optional(), 
+  lang: Joi.string().optional(),
 });
 
-module.exports = updateCustomerSchema ;
+module.exports = updateCustomerSchema;

@@ -32,9 +32,10 @@ exports.login = async (req, res) => {
 exports.createCustomer = async (req, res) => {
     try {
         const customer_data = req.body;
+        const credentials = req.session.user;
 
         //Create customer
-        const new_customer = await mainService.createCustomer(req.session.user, customer_data);
+        const new_customer = await mainService.createCustomer(credentials, customer_data);
         if (new_customer.hasOwnProperty('error'))
             res.status(400).json({ error: 'creation error', message: response.error.data.message });
 
@@ -48,8 +49,13 @@ exports.createCustomer = async (req, res) => {
 
 exports.updateCustomer = async (req, res) => {
     try {
-
+        const customer_data = req.body;
+        const customer_Id = req.params.id;
+        const credentials = req.session.user;
+        const response = await mainService.updateCustomer(credentials, customer_Id, customer_data);
+        res.status(200).json(response);
     } catch (e) {
+        
         res.status(500).json({ error: e.message });
     }
 

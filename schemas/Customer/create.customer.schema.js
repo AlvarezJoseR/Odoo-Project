@@ -13,8 +13,9 @@ const createCustomerSchema = Joi.object({
   state_id: Joi.number().integer().optional(),
   country_id: Joi.number().integer().optional(),
   zip: Joi.string().optional().allow(''),
-
-  vat: Joi.string().optional().allow(''), 
+  customer_rank: Joi.number().integer().optional(),
+  supplier_rank: Joi.number().integer().optional(),
+  vat: Joi.string().optional().allow(''),
 
   phone: Joi.string().optional().allow(''),
   mobile: Joi.string().optional().allow(''),
@@ -26,4 +27,4 @@ const createCustomerSchema = Joi.object({
   bank_account: Joi.array().items(bankAccountSchema).optional()
 });
 
-module.exports = createCustomerSchema ;
+module.exports = createCustomerSchema;

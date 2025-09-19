@@ -57,7 +57,7 @@ exports.createCustomer = async (credentials, customer_info) => {
         return (new_customer);
 
     } catch (e) {
-        throw new Error(e);
+        throw e;
     }
 }
 
@@ -66,7 +66,7 @@ exports.getCutomerById = async (credentials, customer_id) => {
         const response = await customerService.getAllCustomer(credentials, [['id', '=', customer_id]]);
         return response;
     } catch (e) {
-        throw new Error(e);
+        throw e;
     }
 }
 
@@ -84,7 +84,7 @@ exports.getCutomerByFilters = async (credentials, filters) => {
         return (response);
 
     } catch (e) {
-        throw new Error(e);
+        throw e;
     }
 }
 
@@ -94,6 +94,18 @@ exports.deleteCustomer = async (credentials, customer_id) => {
         return (response);
 
     } catch (e) {
-        throw new Error(e);
+        throw e;
+    }
+}
+
+exports.updateCustomer = async (credentials, customer_id, customer_data) => {
+    try {
+        await customerService.updateCustomer(credentials, customer_id, customer_data);
+        const response  = await customerService.getAllCustomer(credentials, [['id', '=', customer_id]]);
+        return (response);
+
+    } catch (e) {
+
+        throw e;
     }
 }
