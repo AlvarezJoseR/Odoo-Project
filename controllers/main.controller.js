@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const mainService = require('./../services/Api/main.service');
 const authService = require('./../services/auth.service');
 
-
 //Auth 
 exports.login = async (req, res) => {
     try {
