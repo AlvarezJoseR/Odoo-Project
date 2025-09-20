@@ -82,10 +82,10 @@ exports.getCustomerById = async (req, res) => {
         const customer_Id = req.params.id;
         const credentials = req.session.user;
         const response = await mainService.getCutomerById(credentials, customer_Id);
-        if (response.length < 1){
+        if (response.length < 1) {
             res.status(400).json({ status: 400, message: `Customer with id '${customer_Id}' does not exist` })
             return;
-        } 
+        }
         res.status(200).json({ status: 200, data: response });
     } catch (e) {
         res.status(500).json({ status: 500, error: e });
@@ -191,8 +191,8 @@ exports.getBankAccountById = async (req, res) => {
         const credentials = req.session.user;
         const bank_account_id = req.params.id;
         const response = await mainService.getBankAccountById(credentials, bank_account_id);
-        if (response.length < 1){
-             res.status(400).json({ status: 400, message: `bank account with id '${bank_account_id}' does not exist` });
+        if (response.length < 1) {
+            res.status(400).json({ status: 400, message: `bank account with id '${bank_account_id}' does not exist` });
             return;
         }
         res.status(200).json({ status: 200, data: response });
@@ -219,9 +219,12 @@ exports.addProductInvoice = async (req, res) => {
     try {
         const credentials = req.session.user;
         const invoice_id = req.params.id;
-        const product_data = req.body;
-        await mainService.addProductInvoice(credentials, invoice_id, product_data);
-        res.status(200).json({ status: 200, message: "Products added." });
+        const products = req.body.products;
+        for (const p of products) {
+            await mainService.addProductInvoice(credentials, invoice_id, p);
+        }
+        const invoice = await mainService.getInvoiceById(credentials, invoice_id);
+        res.status(200).json({ status: 200, message: "Products added.", data: invoice });
     } catch (e) {
         res.status(500).json({ status: 500, error: e.message });
     }
@@ -246,8 +249,8 @@ exports.getInvoiceById = async (req, res) => {
         const credentials = req.session.user;
         const invoice_id = req.params.id;
         const invoice = await mainService.getInvoiceById(credentials, invoice_id);
-        if (invoice.length < 1){
-             res.status(400).json({ status: 400, message: `invoice with id '${invoice_id}' does not exist` });
+        if (invoice.length < 1) {
+            res.status(400).json({ status: 400, message: `invoice with id '${invoice_id}' does not exist` });
             return;
         }
 
