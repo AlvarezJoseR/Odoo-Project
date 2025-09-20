@@ -16,6 +16,7 @@ const createCustomerSchema = require('../../schemas/Customer/create.customer.sch
 exports.createCustomer = async (credentials, customer_info) => {
     //Create customer
     let new_customer_id;
+    let errors = [];
     try {
         const customer_fields = createCustomerSchema.describe().keys;
         const customer_data = {};
@@ -41,14 +42,14 @@ exports.createCustomer = async (credentials, customer_info) => {
         for (const bank_account of customer_info.bank_account) {
             bank_account.partner_id = new_customer_id;
             try {
-                await this.createBankAccount(credentials, bank_account); await this.createBankAccount(credentials, bank_account);
-            } catch (e) {}
+                await this.createBankAccount(credentials, bank_account); 
+            } catch (e) { errors.push(e.message)}
         }
     }
 
     //Return new customer data
     const new_customer = await customerService.getAllCustomer(credentials, [['id', "=", new_customer_id]]);
-    return (new_customer);
+    return ({customer: new_customer, errors: errors});
 }
 
 exports.getCutomerById = async (credentials, customer_id) => {
@@ -185,7 +186,6 @@ exports.createBankAccount = async (credentials, bank_account) => {
         if (bank_account_id.hasOwnProperty('error'))
             throw new Error('bank account creation error ' + bank_account_id.error.data.message);
 
-
         const bankAccount = await bankAccountService.getBankAccount(credentials, [['id', '=', bank_account_id]])
         return bankAccount;
 
@@ -215,8 +215,8 @@ exports.getBankAccountById = async (credentials, invoice_id) => {
 
 //Invoices
 exports.createInvoice = async (credentials, data) => {
+    let new_invoice_id;
     try {
-
         const invoice_data = {}
         //Prepare invoice data
         for (const [key, value] of Object.entries(data)) {
@@ -226,20 +226,24 @@ exports.createInvoice = async (credentials, data) => {
         }
 
         const invoice_id = await invoiceService.createInvoice(credentials, invoice_data);
-
-        //add products
-        if (data.hasOwnProperty('products')) {
-            for (const product of data.products) {
-                if (!product.invoice_id) product.move_id = invoice_id;
-                await invoiceService.addProduct(credentials, product);
-            }
-        }
-
-        const invoice = await invoiceService.getInvoice(credentials, [['id', '=', invoice_id]])
-        return invoice;
+        new_invoice_id = invoice_id;
     } catch (e) {
         throw e
     }
+
+    //add products
+    if (data.hasOwnProperty('products')) {
+        for (const product of data.products) {
+            if (!product.invoice_id) product.move_id = new_invoice_id;
+            try {
+                await invoiceService.addProduct(credentials, product);
+            } catch (e) { }
+        }
+    }
+
+    const invoice = await invoiceService.getInvoice(credentials, [['id', '=', new_invoice_id]])
+    return invoice;
+
 }
 
 exports.addProductInvoice = async (credentials, invoice_id, product_data) => {
@@ -253,11 +257,7 @@ exports.addProductInvoice = async (credentials, invoice_id, product_data) => {
 
 exports.deleteProductInvoice = async (credentials, invoice_id, product_delete_id) => {
     try {
-        for (const product of product_delete_id) {
-            const response = await invoiceService.deleteProductInvoice(credentials, invoice_id, product);
-            if (response.hasOwnProperty('error'))
-                throw new Error('delete product error: ' + response.error.data.message);
-        }
+        await invoiceService.deleteProductInvoice(credentials, invoice_id, product_delete_id);
         return true;
     } catch (e) {
         throw e

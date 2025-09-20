@@ -220,15 +220,21 @@ exports.createInvoice = async (req, res) => {
 };
 
 exports.addProductInvoice = async (req, res) => {
+    let errors = []
     try {
         const credentials = req.session.user;
         const invoice_id = req.params.id;
         const products = req.body.products;
         for (const p of products) {
-            await mainService.addProductInvoice(credentials, invoice_id, p);
+            try {
+                await mainService.addProductInvoice(credentials, invoice_id, p);
+            } catch (e) {
+                errors.push(e.message);
+            }
+
         }
         const invoice = await mainService.getInvoiceById(credentials, invoice_id);
-        res.status(200).json({ status: 200, message: "Products added.", data: invoice });
+        res.status(200).json({ status: 200, message: "Products added.", data: invoice, errors: errors });
     } catch (e) {
         res.status(500).json({ status: 500, error: e.message });
     }
@@ -236,12 +242,20 @@ exports.addProductInvoice = async (req, res) => {
 };
 
 exports.deleteProductInvoice = async (req, res) => {
+    let errors = [];
     try {
         const credentials = req.session.user;
         const invoice_id = req.params.id;
         const product_delete_id = req.body.products;
-        await mainService.deleteProductInvoice(credentials, invoice_id, product_delete_id);
-        res.status(200).json({ status: 200, message: "Products deleted" });
+        for (const product of product_delete_id) {
+            try {
+                await mainService.deleteProductInvoice(credentials, invoice_id, product);
+            } catch (e) { 
+                errors.push(e.message);
+            }
+
+        }
+        res.status(200).json({ status: 200, message: "Products deleted", errors: errors });
     } catch (e) {
         res.status(500).json({ status: 500, error: e.message });
     }
