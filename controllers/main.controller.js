@@ -165,6 +165,18 @@ exports.updateProduct = async (req, res) => {
 
 };
 
+exports.getProducts = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const response = await mainService.getProducts(credentials);
+
+        res.status(200).json({ status: 200, data: response });
+    } catch (e) {
+        res.status(500).json({ status: 500, error: e.message });
+    }
+
+};
+
 //Bank Accounts
 exports.createBankAccount = async (req, res) => {
     try {

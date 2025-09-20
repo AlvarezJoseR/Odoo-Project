@@ -34,7 +34,9 @@ router.get('/customer', sessionValidator, mainController.getCustomerByFilters)
 router.post('/product', sessionValidator, validator(createProductSchema), mainController.createProduct);
 router.delete('/product/:id', sessionValidator, mainController.deleteProduct);
 router.get('/product/:id', sessionValidator, mainController.getProductById)
+router.get('/product', sessionValidator, mainController.getProducts)
 router.put('/product/:id', sessionValidator, validator(updateProductSchema), mainController.updateProduct);
+
 
 //Bank account Routes
 router.post('/bankaccount', sessionValidator, validator(createBankAccountSchema), mainController.createBankAccount)

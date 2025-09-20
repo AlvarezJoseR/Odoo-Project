@@ -137,6 +137,15 @@ exports.getProductById = async (credentials, product_id) => {
     }
 }
 
+exports.getProducts = async (credentials) => {
+    try {
+        const response = await productService.getProducts(credentials);
+        return response;
+    } catch (e) {
+        throw e;
+    }
+}
+
 exports.deleteProduct = async (credentials, product_id) => {
     try {
         const response = await productService.deleteProduct(credentials, product_id);
