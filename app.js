@@ -1,9 +1,5 @@
 require('dotenv').config();
 const express = require('express')
-const customerRouters = require('./routers/customers.routes.js')
-const authRouters = require('./routers/auth.routes.js')
-const companyRouters = require('./routers/company.routes.js')
-const bankAccountRouters = require('./routers/bankAccount.routes.js')
 const apiRoutes = require('./routers/api.routes.js')
 const app = express()
 const port = process.env.PORT;
@@ -11,10 +7,6 @@ app.use(express.json());
 
 
 //Routes
-app.use('/customer', customerRouters);
-app.use('/auth', authRouters)
-app.use('/company', companyRouters)
-app.use('/bankAccount', bankAccountRouters)
 app.use('/api', apiRoutes)
 
 app.listen(port, () => {

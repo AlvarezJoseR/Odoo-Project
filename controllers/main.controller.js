@@ -4,8 +4,6 @@ const jwt = require('jsonwebtoken');
 //Services
 const mainService = require('./../services/Api/main.service');
 const authService = require('./../services/auth.service');
-const { message } = require('../schemas/BankAccount/create.bankAccount.schema');
-
 
 //Auth 
 exports.login = async (req, res) => {
