@@ -38,6 +38,7 @@ router.put('/product/:id', sessionValidator, validator(updateProductSchema), mai
 //Bank account Routes
 router.post('/bankaccount', sessionValidator, validator(createBankAccountSchema), mainController.createBankAccount)
 router.delete('/bankaccount/:id', sessionValidator, mainController.deleteBankAccount )
+router.get('/bankaccount/:id', sessionValidator, mainController.getBankAccountById);
 
 //Invoice Routes
 router.post('/invoice', sessionValidator, validator(createInvoiceSchema), mainController.createInvoice)

@@ -201,6 +201,15 @@ exports.deleteBankAccount = async (credentials, bank_account_id) => {
     }
 }
 
+exports.getBankAccountById = async (credentials, invoice_id) => {
+    try {
+        const response = await bankAccountService.getBankAccount(credentials, [["id", "=", invoice_id]]);
+        return response;
+    } catch (e) {
+        throw e
+    }
+}
+
 //Invoices
 exports.createInvoice = async (credentials, data) => {
     try {

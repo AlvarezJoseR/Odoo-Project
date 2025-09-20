@@ -186,6 +186,22 @@ exports.deleteBankAccount = async (req, res) => {
 
 };
 
+exports.getBankAccountById = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const bank_account_id = req.params.id;
+        const response = await mainService.getBankAccountById(credentials, bank_account_id);
+        if (response.length < 1){
+             res.status(400).json({ status: 400, message: `bank account with id '${bank_account_id}' does not exist` });
+            return;
+        }
+        res.status(200).json({ status: 200, data: response });
+    } catch (e) {
+        res.status(500).json({ status: 500, error: e.message });
+    }
+
+};
+
 //Invoices
 exports.createInvoice = async (req, res) => {
     try {
