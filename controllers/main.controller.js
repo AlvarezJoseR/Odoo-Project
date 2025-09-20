@@ -235,9 +235,9 @@ exports.confirmInvoice = async (req, res) => {
     try {
         const credentials = req.session.user;
         const invoice_id = req.params.id;
-        const invoice = await mainService.confirmInvoice(credentials, invoice_id);
+        await mainService.confirmInvoice(credentials, invoice_id);
 
-        res.status(200).json({status: 200, data: invoice});
+        res.status(200).json({status: 200, message: "Invoice confirmed."});
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
