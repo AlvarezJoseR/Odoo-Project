@@ -42,33 +42,3 @@ exports.getAllCompanies = async (credentials, filters = []) => {
         throw error;
     }
 }
-
-exports.getCompanyfields = async (credentials,) => {
-    try {
-        const { db, uid, password } = credentials
-
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    "res.company",
-                    "fields_get",
-                    [],
-                    { attributes: ["string", "help", "type"] }
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        return response.data.result;
-
-    } catch (error) {
-        throw error;
-    }
-}

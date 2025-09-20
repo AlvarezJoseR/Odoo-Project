@@ -1,6 +1,6 @@
 const axios = require('axios');
 const URL = process.env.URL;
-
+const odooQuery = require('../helper/odoo.query');
 
 /**
  *  Returns customers info 
@@ -9,46 +9,31 @@ const URL = process.env.URL;
 exports.getAllCustomer = async (credentials, filters = []) => {
     try {
         const { db, uid, password } = credentials
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    "res.partner",
-                    "search_read",
-                    [filters],
-                    {
-                        fields: [
-                            "id",
-                            "name",
-                            "email",
-                            "phone",
-                            "mobile",
-                            "is_company",
-                            "company_id",
-                            "street",
-                            "city",
-                            "state_id",
-                            "country_id",
-                            "zip",
-                            "customer_rank",
-                            "active",
-                            "vat",
-                            "bank_ids"
-                        ]
-                    }
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
+        const response = await odooQuery.query(
+            credentials,
+            "search_read",
+            "res.partner",
+            [filters], {
+            fields: [
+                "id",
+                "name",
+                "email",
+                "phone",
+                "mobile",
+                "is_company",
+                "company_id",
+                "street",
+                "city",
+                "state_id",
+                "country_id",
+                "zip",
+                "customer_rank",
+                "active",
+                "vat",
+                "bank_ids"
+            ]
         });
-        if (response.data.hasOwnProperty('error'))
-            return response.data;
-        return response.data.result;
+        return response
 
     } catch (error) {
         throw error;
@@ -61,30 +46,8 @@ exports.getAllCustomer = async (credentials, filters = []) => {
  */
 exports.createCustomer = async (credentials, data) => {
     try {
-        const { db, uid, password } = credentials
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    "res.partner",
-                    "create",
-                    [data],
-                    {}
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        if (response.data.hasOwnProperty('error'))
-            return response.data;
-
-        return response.data.result;
+        const response = odooQuery.query(credentials, "create", "res.partner", [data], {}); 
+        return response;
 
     } catch (error) {
         throw new Error({
@@ -111,25 +74,9 @@ exports.deleteCustomer = async (credentials, customer_id) => {
         if (!customer || customer.length === 0) throw new Error('customer does not exist')
 
         //Delete Customer
-        const { db, uid, password } = credentials
 
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    "res.partner", "write",
-                    [[id], { active: false }]
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-        return response.data;
+        const response = await odooQuery.query(credentials, "write", "res.partner", [[id], { active: false }], {});
+        return response;
 
     } catch (error) {
         throw error;
@@ -152,65 +99,12 @@ exports.updateCustomer = async (credentials, customer_id, customer_data = {}) =>
         //Verify customer exists
         const customer = await this.getAllCustomer(credentials, [['id', "=", customer_id]]);
         if (!customer || customer.length === 0) throw new Error('customer does not exist')
-        const { db, uid, password } = credentials
 
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    "res.partner",
-                    "write",
-                    [[id], customer_data],
-                    {}
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (response.data.hasOwnProperty('error'))
-            return response.data;
-        return response.data.result;
+        const response = await odooQuery.query(credentials, "write", "res.partner", [[id], customer_data], {});
+        return response;
     } catch (error) {
 
         throw error;
     }
 }
 
-/**
- *  Get the customer model fields
- * @returns Returns a list of customers field
- */
-exports.getCustomerfields = async (credentials) => {
-    try {
-        const { db, uid, password } = credentials
-
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    "res.partner",
-                    "fields_get",
-                    [],
-                    { attributes: ["string", "help", "type"] }
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        return response.data.result;
-
-    } catch (error) {
-        throw error;
-    }
-}
