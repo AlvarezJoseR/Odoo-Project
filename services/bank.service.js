@@ -1,32 +1,9 @@
-const axios = require('axios');
-const URL = process.env.URL;
+const odooQuery = require('../helper/odoo.query');
 
 exports.createBank = async (credentials, data) => {
     try {
-            const { db, uid, password } = credentials
-            const response = await axios.post(URL, {
-                jsonrpc: "2.0",
-                method: "call",
-                params: {
-                    service: "object",
-                    method: "execute_kw",
-                    args: [
-                        db, uid, password,
-                        "res.bank",
-                        "create",
-                        [data],
-                        {}
-                    ]
-                },
-                id: new Date().getTime()
-            }, {
-                headers: { 'Content-Type': 'application/json' }
-            });
-    
-            if (response.data.hasOwnProperty('error'))
-                return response.data;
-    
-            return response.data.result;
+            const response = await odooQuery.query(credentials, "create", "res.bank", [data], {});
+            return response;
     
         } catch (error) {
             throw new Error({
@@ -37,30 +14,8 @@ exports.createBank = async (credentials, data) => {
 
 exports.getBank = async (credentials, filters = []) => {
     try {
-        const { db, uid, password } = credentials
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    "res.bank",
-                    "search_read",
-                    [filters],
-                    {}
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        if (response.data.hasOwnProperty('error'))
-            return response.data;
-
-        return response.data.result;
+        const response = await odooQuery.query(credentials, "search_read", "res.bank", [filters], {});
+        return response;
 
     } catch (error) {
         throw new Error({
