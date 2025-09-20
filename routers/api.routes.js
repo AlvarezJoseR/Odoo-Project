@@ -17,6 +17,7 @@ const createBankAccountSchema = require('./../schemas/BankAccount/create.bankAcc
 const createInvoiceSchema = require('./../schemas/Invoices/create.invoices.schema.js');
 const updateProductSchema = require('./../schemas/Product/update.product.schema.js');
 const addProductInvoice = require('./../schemas/Invoices/add.producto.invoices.schema.js');
+const deleteProductsInvoiceSchema = require('./../schemas/Invoices/delete.producto.invoices.schema.js');
 
 //Auth Routes
 router.post('/login', validator(loginSchema), mainController.login);
@@ -41,7 +42,7 @@ router.delete('/bankaccount/:id', sessionValidator, mainController.deleteBankAcc
 //Invoice Routes
 router.post('/invoice', sessionValidator, validator(createInvoiceSchema), mainController.createInvoice)
 router.put('/invoice/addproduct/:id', sessionValidator, validator(addProductInvoice), mainController.addProductInvoice)
-router.delete('/invoice/deleteproduct/:id', sessionValidator, mainController.deleteProductInvoice)
+router.delete('/invoice/deleteproduct/:id', sessionValidator,validator(deleteProductsInvoiceSchema), mainController.deleteProductInvoice)
 router.get('/invoice/:id', sessionValidator, mainController.getInvoiceById );
 
 

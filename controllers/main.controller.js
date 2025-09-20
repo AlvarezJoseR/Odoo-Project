@@ -204,9 +204,10 @@ exports.addProductInvoice = async (req, res) => {
 exports.deleteProductInvoice = async (req, res) => {
     try {
         const credentials = req.session.user;
-        const product_invoice_id = req.params.id;
-        const response = await mainService.deleteProductInvoice(credentials, product_invoice_id);
-        res.status(200).json({message: "producto eliminado de la factura con exito"});
+        const invoice_id = req.params.id;
+        const product_delete_id = req.body;
+        const response = await mainService.deleteProductInvoice(credentials, invoice_id, product_delete_id);
+        res.status(200).json({message: "productos eliminados de la factura con exito"});
     } catch (e) {
         res.status(500).json({ error: e.message });
     }

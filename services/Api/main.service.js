@@ -13,7 +13,6 @@ const invoiceService = require('../invoice.service');
 const createCustomerSchema = require('../../schemas/Customer/create.customer.schema');
 
 
-
 exports.createCustomer = async (credentials, customer_info) => {
     //Create customer
     try {
@@ -260,17 +259,21 @@ exports.addProductInvoice = async (credentials, invoice_id, product_data) => {
         const response = await invoiceService.addProduct(credentials, { ...product_data, move_id: invoice_id });
         return response;
     } catch (e) {
-       throw e
+        throw e
     }
 };
 
-exports.deleteProductInvoice = async (credentials, product_invoice_id) => {
+exports.deleteProductInvoice = async (credentials, invoice_id, product_delete_id) => {
     try {
-        const response = await invoiceService.deleteProductInvoice(credentials, product_invoice_id);
+        for (const product of product_delete_id) {
+            const response = await invoiceService.deleteProductInvoice(credentials, invoice_id, product);
+            if (response.hasOwnProperty('error'))
+                throw new Error('delete product error: ' + response.error.data.message);
+        }
+
         console.log(response)
-         if (response.hasOwnProperty('error'))
-            throw new Error('delete product error: ' + response.error.data.message);
-        return response;
+
+        return true;
     } catch (e) {
         throw e
     }
