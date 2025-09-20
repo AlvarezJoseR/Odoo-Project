@@ -1,7 +1,7 @@
 const axios = require('axios');
 const URL = process.env.URL;
 
-exports.login = async (db, username, password) =>{
+exports.login = async (db, username, password) => {
   const response = await axios.post(URL, {
     jsonrpc: "2.0",
     method: "call",
@@ -12,5 +12,5 @@ exports.login = async (db, username, password) =>{
     },
     id: new Date().getTime()
   });
-  return response.data.result;  
+  return response.data.result;
 }

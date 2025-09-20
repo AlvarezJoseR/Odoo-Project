@@ -17,7 +17,7 @@ exports.getAllCompanies = async (credentials, filters = []) => {
             ]
         });
         return response;
-    } catch (error) {
-        throw error;
+    } catch (e) {
+        throw e;
     }
 }

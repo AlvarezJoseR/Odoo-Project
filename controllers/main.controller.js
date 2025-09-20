@@ -17,6 +17,10 @@ exports.login = async (req, res) => {
             password,
         }, 'shhhhh', { expiresIn: '1h' });
 
+        if (!response) {
+            res.status(401).json({ status: 401, error: 'Unauthorized', message: 'Credentials do not match' });
+            return;
+        }
         res.status(200).json({ status: 200, message: "Successful login", token: token });
     } catch (e) {
         res.status(500).json({

@@ -33,8 +33,8 @@ exports.getAllCustomer = async (credentials, filters = []) => {
         });
         return response
 
-    } catch (error) {
-        throw error;
+    } catch (e) {
+        throw e;
     }
 }
 
@@ -47,10 +47,8 @@ exports.createCustomer = async (credentials, data) => {
         const response = odooQuery.query(credentials, "create", "res.partner", [data], {}); 
         return response;
 
-    } catch (error) {
-        throw new Error({
-            'error': error
-        });
+    } catch (e) {
+        throw e
     }
 }
 
@@ -76,8 +74,8 @@ exports.deleteCustomer = async (credentials, customer_id) => {
         const response = await odooQuery.query(credentials, "write", "res.partner", [[id], { active: false }], {});
         return response;
 
-    } catch (error) {
-        throw error;
+    } catch (e) {
+        throw e;
     }
 }
 
@@ -100,9 +98,9 @@ exports.updateCustomer = async (credentials, customer_id, customer_data = {}) =>
 
         const response = await odooQuery.query(credentials, "write", "res.partner", [[id], customer_data], {});
         return response;
-    } catch (error) {
+    } catch (e) {
 
-        throw error;
+        throw e;
     }
 }
 

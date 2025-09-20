@@ -1,5 +1,6 @@
 const customerService = require('./../services/customers.service');
 const bankAccountService = require('./../services/bankAccount.service');
+
 const validateBankAccount = async (req, res, next) => {
     const bank_account_data = req.body;
     const credentials = req.session.user;

@@ -4,8 +4,8 @@ exports.createProduct = async (credentials, data) => {
     try {
         const response = odooQuery.query(credentials, "create", "product.template", [data], {});
         return response;
-    } catch (error) {
-        throw error
+    } catch (e) {
+        throw e
     }
 }
 
@@ -27,8 +27,8 @@ exports.deleteProduct = async (credentials, product_id) => {
         const response = await odooQuery.query(credentials, "write", "product.template", [[id], { active: false }], {});
         return response;
 
-    } catch (error) {
-        throw error
+    } catch (e) {
+        throw e
     }
 }
 
@@ -37,9 +37,9 @@ exports.getProducts = async (credentials, filters = []) => {
         const response = odooQuery.query(credentials, "search_read", "product.template", [filters], {});
         return response;
 
-    } catch (error) {
+    } catch (e) {
 
-        throw error
+        throw e
     }
 }
 
@@ -58,8 +58,8 @@ exports.updateProduct = async (credentials, product_id, product_data = {}) => {
 
         const response = await odooQuery.query(credentials, "write", "product.template", [[id], product_data], {});
         return response;
-    } catch (error) {
+    } catch (e) {
 
-        throw error;
+        throw e;
     }
 }

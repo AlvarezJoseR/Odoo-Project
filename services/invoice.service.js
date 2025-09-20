@@ -10,8 +10,8 @@ exports.createInvoice = async (credentials, data) => {
         const response = await odooQuery.query(credentials, "create", "account.move", [data], {});
 
         return response;
-    } catch (error) {
-        throw error
+    } catch (e) {
+        throw e
     }
 }
 
@@ -20,9 +20,9 @@ exports.getInvoice = async (credentials, filters = []) => {
         const response = await odooQuery.query(credentials, "search_read", "account.move", [filters], {});
         return response;
 
-    } catch (error) {
+    } catch (e) {
 
-        throw error
+        throw e
     }
 }
 
@@ -64,8 +64,8 @@ exports.deleteProductInvoice = async (credentials, invoice_id, product_invoice_i
 
         return response;
 
-    } catch (error) {
-        throw error
+    } catch (e) {
+        throw e
     }
 }
 
@@ -80,7 +80,7 @@ exports.confirmInvoice = async (credentials, invoice_id) => {
         const response = await  odooQuery.query(credentials, "action_post", "account.move", [[invoice_id]], {}); 
         return response;
 
-    } catch (error) {
-        throw error
+    } catch (e) {
+        throw e
     }
 }

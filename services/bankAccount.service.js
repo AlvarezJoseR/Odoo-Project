@@ -5,10 +5,8 @@ exports.createBankAccount = async (credentials, data) => {
         const response = await odooQuery.query(credentials, "create", "res.partner.bank", [data], {});
         return response;
 
-    } catch (error) {
-        throw new Error({
-            'error': error
-        });
+    } catch (e) {
+        throw e
     }
 }
 
@@ -29,8 +27,8 @@ exports.deleteBankAcount = async (credentials, bank_account_id) => {
         const response = await odooQuery.query(credentials, "write", "res.partner.bank", [[id], { active: false }]);
         return response;
 
-    } catch (error) {
-        throw error;
+    } catch (e) {
+        throw e;
     }
 }
 
@@ -39,9 +37,7 @@ exports.getBankAccount = async (credentials, filters = []) => {
         const response = await odooQuery.query(credentials, "search_read", "res.partner.bank", [filters], {});
         return response;
 
-    } catch (error) {
-        throw new Error({
-            'error': error
-        });
+    } catch (e) {
+        throw e
     }
 }

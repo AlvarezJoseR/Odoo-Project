@@ -5,10 +5,8 @@ exports.createBank = async (credentials, data) => {
             const response = await odooQuery.query(credentials, "create", "res.bank", [data], {});
             return response;
     
-        } catch (error) {
-            throw new Error({
-                'error': error
-            });
+        } catch (e) {
+            throw e
         }
 }
 
@@ -17,9 +15,7 @@ exports.getBank = async (credentials, filters = []) => {
         const response = await odooQuery.query(credentials, "search_read", "res.bank", [filters], {});
         return response;
 
-    } catch (error) {
-        throw new Error({
-            'error': error
-        });
+    } catch (e) {
+        throw e
     }
 }
