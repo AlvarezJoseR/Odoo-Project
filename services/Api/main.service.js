@@ -8,6 +8,7 @@ const customerService = require('../customers.service');
 const bankAccountService = require('../bankAccount.service');
 const bankService = require('../bank.service');
 const invoiceService = require('../invoice.service');
+const odooQuery = require('../../helper/odoo.query');
 
 //Schemas
 const createCustomerSchema = require('../../schemas/Customer/create.customer.schema');
@@ -97,30 +98,11 @@ exports.updateCustomer = async (credentials, customer_id, customer_data) => {
     }
 }
 
-
+//Models
 exports.getModels = async (credentials, model) => {
     try {
-        const { db, uid, password } = credentials
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    model,
-                    "fields_get",
-                    [],
-                    { attributes: ["string", "help", "type"] }
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        return response.data.result;
+        const response = await odooQuery.query(credentials, 'fields_get', model, [], { attributes: ["string", "help", "type"] })
+        return response;
 
     } catch (error) {
         throw error;
@@ -276,6 +258,15 @@ exports.deleteProductInvoice = async (credentials, invoice_id, product_delete_id
 exports.getInvoiceById = async (credentials, invoice_id) => {
     try {
         const response = await invoiceService.getInvoice(credentials, [["id", "=", invoice_id]]);
+        return response;
+    } catch (e) {
+        throw e
+    }
+};
+
+exports.confirmInvoice = async (credentials, invoice_id) => {
+    try {
+        const response = await invoiceService.confirmInvoice(credentials, invoice_id);
         return response;
     } catch (e) {
         throw e

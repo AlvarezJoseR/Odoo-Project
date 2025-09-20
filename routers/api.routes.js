@@ -43,7 +43,8 @@ router.delete('/bankaccount/:id', sessionValidator, mainController.deleteBankAcc
 router.post('/invoice', sessionValidator, validator(createInvoiceSchema), mainController.createInvoice)
 router.put('/invoice/addproduct/:id', sessionValidator, validator(addProductInvoice), mainController.addProductInvoice)
 router.delete('/invoice/deleteproduct/:id', sessionValidator,validator(deleteProductsInvoiceSchema), mainController.deleteProductInvoice)
-router.get('/invoice/:id', sessionValidator, mainController.getInvoiceById );
+router.get('/invoice/:id', sessionValidator, mainController.getInvoiceById);
+router.post('/invoice/confirm/:id', sessionValidator, mainController.confirmInvoice);
 
 
 //Models Routes

@@ -153,3 +153,40 @@ exports.deleteProductInvoice = async (credentials, invoice_id, product_invoice_i
         throw error
     }
 }
+
+exports.confirmInvoice = async (credentials, invoice_id) => {
+    try {
+        const id = parseInt(invoice_id);
+        if (isNaN(id)) {
+            throw new Error('invalid ID')
+        }
+
+        invoice_id = id;
+
+        const { db, uid, password } = credentials
+        const response = await axios.post(URL, {
+            jsonrpc: "2.0",
+            method: "call",
+            params: {
+                service: "object",
+                method: "execute_kw",
+                args: [
+                    db, uid, password,
+                    "account.move",
+                    "action_post",
+                    [[invoice_id]]
+                ]
+            },
+            id: new Date().getTime()
+        }, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.data.hasOwnProperty('error'))
+             throw new Error(response.data.error.data.message)
+
+        return response.data.result;
+
+    } catch (error) {
+        throw error
+    }
+}

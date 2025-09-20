@@ -231,14 +231,26 @@ exports.getInvoiceById = async (req, res) => {
 
 };
 
+exports.confirmInvoice = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const invoice_id = req.params.id;
+        const invoice = await mainService.confirmInvoice(credentials, invoice_id);
+
+        res.status(200).json({status: 200, data: invoice});
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+};
+
 //Models
 exports.getModels = async (req, res) => {
     try {
         const credentials = req.session.user;
         const model_name = req.query.name;
-        const model = await mainService.getModels(credentials, model_name);
-
-        res.status(200).json({status: 200, data: model});
+        const model = await mainService.getModels(credentials, model_name) || {};
+        res.status(200).json({status: 200, data: model });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
