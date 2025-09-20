@@ -1,5 +1,3 @@
-const axios = require('axios');
-const URL = process.env.URL;
 const odooQuery = require('../helper/odoo.query');
 
 exports.createBankAccount = async (credentials, data) => {

@@ -1,6 +1,5 @@
 //imports
-const axios = require('axios');
-const URL = process.env.URL;
+const odooQuery = require('../../helper/odoo.query');
 
 //Service
 const productService = require('../product.service');
@@ -8,7 +7,7 @@ const customerService = require('../customers.service');
 const bankAccountService = require('../bankAccount.service');
 const bankService = require('../bank.service');
 const invoiceService = require('../invoice.service');
-const odooQuery = require('../../helper/odoo.query');
+
 
 //Schemas
 const createCustomerSchema = require('../../schemas/Customer/create.customer.schema');
@@ -209,14 +208,12 @@ exports.createInvoice = async (credentials, data) => {
         const invoice_data = {}
         //Prepare invoice data
         for (const [key, value] of Object.entries(data)) {
-            if (data.hasOwnProperty(key) && key != 'products') {
+            if (key != 'products') {
                 invoice_data[key] = value;
             }
         }
 
         const invoice_id = await invoiceService.createInvoice(credentials, invoice_data);
-        if (invoice_id.hasOwnProperty('error'))
-            throw new Error('invoice creation error' + invoice_id.error.data.message);
 
         //add products
         if (data.hasOwnProperty('products')) {

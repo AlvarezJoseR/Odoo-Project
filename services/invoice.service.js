@@ -1,36 +1,15 @@
 const axios = require('axios');
 const URL = process.env.URL;
 const productService = require('./product.service');
+const odooQuery = require('../helper/odoo.query');
 
 exports.createInvoice = async (credentials, data) => {
 
     try {
-        const { db, uid, password } = credentials
         data.invoice_date = new Date();
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    "account.move",
-                    "create",
-                    [data],
-                    {}
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
+        const response = await odooQuery.query(credentials, "create", "account.move", [data], {});
 
-        if (response.data.hasOwnProperty('error'))
-            return response.data;
-
-        return response.data.result;
-
+        return response;
     } catch (error) {
         throw error
     }
@@ -38,30 +17,8 @@ exports.createInvoice = async (credentials, data) => {
 
 exports.getInvoice = async (credentials, filters = []) => {
     try {
-        const { db, uid, password } = credentials
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    "account.move",
-                    "search_read",
-                    [filters],
-                    {}
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        if (response.data.hasOwnProperty('error'))
-            return response.data;
-
-        return response.data.result;
+        const response = await odooQuery.query(credentials, "search_read", "account.move", [filters], {});
+        return response;
 
     } catch (error) {
 
@@ -85,30 +42,8 @@ exports.addProduct = async (credentials, product_invoice_data) => {
         if (!product || product.length === 0) throw new Error(`product '${product_id}' does not exist`)
 
         //Add product
-        const { db, uid, password } = credentials
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    "account.move.line",
-                    "create",
-                    [product_invoice_data],
-                    {}
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        if (response.data.hasOwnProperty('error'))
-            return response.data;
-
-        return response.data.result;
+        const response = await odooQuery.query(credentials, "create", "account.move.line", [product_invoice_data], {});
+        return response;
 
     } catch (error) {
         throw error
@@ -123,31 +58,11 @@ exports.deleteProductInvoice = async (credentials, invoice_id, product_invoice_i
         }
 
         const invoiceId = id;
+        const response = await odooQuery.query(credentials, "write", "account.move", [[invoiceId], {
+            "invoice_line_ids": [[2, product_invoice_id]]
+        }], {});
 
-        const { db, uid, password } = credentials
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    "account.move",
-                    "write",
-                    [[invoiceId], {
-                        "invoice_line_ids": [[2, product_invoice_id]]
-                    }]
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (response.data.hasOwnProperty('error'))
-            return response.data;
-
-        return response.data.result;
+        return response;
 
     } catch (error) {
         throw error
@@ -162,29 +77,8 @@ exports.confirmInvoice = async (credentials, invoice_id) => {
         }
 
         invoice_id = id;
-
-        const { db, uid, password } = credentials
-        const response = await axios.post(URL, {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-                service: "object",
-                method: "execute_kw",
-                args: [
-                    db, uid, password,
-                    "account.move",
-                    "action_post",
-                    [[invoice_id]]
-                ]
-            },
-            id: new Date().getTime()
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (response.data.hasOwnProperty('error'))
-             throw new Error(response.data.error.data.message)
-
-        return response.data.result;
+        const response = await  odooQuery.query(credentials, "action_post", "account.move", [[invoice_id]], {}); 
+        return response;
 
     } catch (error) {
         throw error

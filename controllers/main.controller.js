@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 //Services
 const mainService = require('./../services/Api/main.service');
 const authService = require('./../services/auth.service');
-const { message } = require('../schemas/BankAccount/create.bankAccount.schema');
 
 
 //Auth 
@@ -22,6 +21,7 @@ exports.login = async (req, res) => {
         res.status(200).json({ status: 200, message: "Successful login", token: token });
     } catch (e) {
         res.status(500).json({
+            status: 500,
             message: e.message
         });
     }
@@ -47,7 +47,7 @@ exports.createCustomer = async (req, res) => {
             data: new_customer
         });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -61,7 +61,7 @@ exports.updateCustomer = async (req, res) => {
         res.status(200).json({ status: 200, message: "Customer updated", data: response });
     } catch (e) {
 
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -70,10 +70,10 @@ exports.deleteCustomer = async (req, res) => {
     try {
         const customer_Id = req.params.id;
         const credentials = req.session.user;
-        const response = await mainService.deleteCustomer(credentials, customer_Id);
+        await mainService.deleteCustomer(credentials, customer_Id);
         res.status(200).json({ status: 200, message: "Customer deleted." });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -83,10 +83,13 @@ exports.getCustomerById = async (req, res) => {
         const customer_Id = req.params.id;
         const credentials = req.session.user;
         const response = await mainService.getCutomerById(credentials, customer_Id);
-
+        if (response.length < 1){
+            res.status(400).json({ status: 400, message: `Customer with id '${customer_Id}' does not exist` })
+            return;
+        } 
         res.status(200).json({ status: 200, data: response });
     } catch (e) {
-        res.status(500).json({ error: e });
+        res.status(500).json({ status: 500, error: e });
     }
 
 };
@@ -98,7 +101,7 @@ exports.getCustomerByFilters = async (req, res) => {
         const response = await mainService.getCutomerByFilters(credentials, filters)
         res.status(200).json({ status: 200, data: response });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -121,9 +124,14 @@ exports.getProductById = async (req, res) => {
         const product_id = req.params.id;
         const credentials = req.session.user;
         const response = await mainService.getProductById(credentials, product_id);
+        if (response.length < 1) {
+            res.status(400).json({ status: 400, message: `Product with id '${product_id}' does not exist` })
+            return;
+        }
+
         res.status(200).json({ status: 200, data: response });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -135,7 +143,7 @@ exports.deleteProduct = async (req, res) => {
         const response = await mainService.deleteProduct(credentials, product_id);
         res.status(200).json({ status: 200, message: "Product deleted." });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -149,7 +157,7 @@ exports.updateProduct = async (req, res) => {
         const updated_product = await mainService.updateProduct(credential, product_id, product_data);
         res.status(200).json({ status: 200, message: "Product updated.", data: updated_product });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -162,7 +170,7 @@ exports.createBankAccount = async (req, res) => {
         const response = await mainService.createBankAccount(credentials, bank_account_data);
         res.status(200).json({ status: 200, message: "Bank account created", data: response });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -174,7 +182,7 @@ exports.deleteBankAccount = async (req, res) => {
         const response = await mainService.deleteBankAccount(credentials, bank_account_id);
         res.status(200).json({ status: 200, message: "Bank account deleted" });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -187,7 +195,7 @@ exports.createInvoice = async (req, res) => {
         const response = await mainService.createInvoice(credentials, invoice_data);
         res.status(200).json({ status: 200, message: "Invoice created.", data: response });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -200,7 +208,7 @@ exports.addProductInvoice = async (req, res) => {
         await mainService.addProductInvoice(credentials, invoice_id, product_data);
         res.status(200).json({ status: 200, message: "Products added." });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -213,7 +221,7 @@ exports.deleteProductInvoice = async (req, res) => {
         await mainService.deleteProductInvoice(credentials, invoice_id, product_delete_id);
         res.status(200).json({ status: 200, message: "Products deleted" });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -223,10 +231,14 @@ exports.getInvoiceById = async (req, res) => {
         const credentials = req.session.user;
         const invoice_id = req.params.id;
         const invoice = await mainService.getInvoiceById(credentials, invoice_id);
+        if (invoice.length < 1){
+             res.status(400).json({ status: 400, message: `invoice with id '${invoice_id}' does not exist` });
+            return;
+        }
 
-        res.status(200).json({status: 200, data: invoice});
+        res.status(200).json({ status: 200, data: invoice });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -237,9 +249,9 @@ exports.confirmInvoice = async (req, res) => {
         const invoice_id = req.params.id;
         await mainService.confirmInvoice(credentials, invoice_id);
 
-        res.status(200).json({status: 200, message: "Invoice confirmed."});
+        res.status(200).json({ status: 200, message: "Invoice confirmed." });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ status: 500, error: e.message });
     }
 
 };
@@ -250,7 +262,7 @@ exports.getModels = async (req, res) => {
         const credentials = req.session.user;
         const model_name = req.query.name;
         const model = await mainService.getModels(credentials, model_name) || {};
-        res.status(200).json({status: 200, data: model });
+        res.status(200).json({ status: 200, data: model });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
