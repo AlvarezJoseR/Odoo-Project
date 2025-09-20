@@ -123,7 +123,6 @@ exports.getModels = async (credentials, model) => {
         return response.data.result;
 
     } catch (error) {
-        console.error(error.response?.data || error.message);
         throw error;
     }
 }
@@ -140,7 +139,6 @@ exports.createProduct = async (credentials, product_data) => {
         return product;
 
     } catch (error) {
-        console.error(error.product?.data || error.message);
         throw error;
     }
 }
@@ -208,7 +206,6 @@ exports.createBankAccount = async (credentials, bank_account) => {
         return bankAccount;
 
     } catch (error) {
-        console.error(error.product?.data || error.message);
         throw error;
     }
 }

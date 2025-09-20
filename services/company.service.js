@@ -39,7 +39,6 @@ exports.getAllCompanies = async (credentials, filters = []) => {
         return response.data.result;
 
     } catch (error) {
-        console.error(error.response?.data || error.message);
         throw error;
     }
 }
@@ -70,7 +69,6 @@ exports.getCompanyfields = async (credentials,) => {
         return response.data.result;
 
     } catch (error) {
-        console.error(error.response?.data || error.message);
         throw error;
     }
 }

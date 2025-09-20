@@ -51,7 +51,6 @@ exports.getAllCustomer = async (credentials, filters = []) => {
         return response.data.result;
 
     } catch (error) {
-        console.error(error.response?.data || error.message);
         throw error;
     }
 }
@@ -133,7 +132,6 @@ exports.deleteCustomer = async (credentials, customer_id) => {
         return response.data;
 
     } catch (error) {
-        console.error(error.response?.data || error.message);
         throw error;
     }
 }
@@ -213,7 +211,6 @@ exports.getCustomerfields = async (credentials) => {
         return response.data.result;
 
     } catch (error) {
-        console.error(error.response?.data || error.message);
         throw error;
     }
 }

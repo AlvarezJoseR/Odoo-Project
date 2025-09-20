@@ -70,7 +70,6 @@ exports.deleteBankAcount = async (credentials, bank_account_id) => {
         return response.data;
 
     } catch (error) {
-        console.error(error.response?.data || error.message);
         throw error;
     }
 }
