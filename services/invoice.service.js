@@ -1,7 +1,9 @@
 const axios = require('axios');
 const URL = process.env.URL;
+const productService = require('./product.service');
 
 exports.createInvoice = async (credentials, data) => {
+
     try {
         const { db, uid, password } = credentials
         data.invoice_date = new Date();
@@ -71,11 +73,18 @@ exports.addProduct = async (credentials, product_invoice_data) => {
     try {
         //Verify valid id
         const id = parseInt(product_invoice_data.move_id);
+        const product_id = product_invoice_data.product_id;
 
         if (isNaN(id)) {
             throw new Error('invalid ID')
         }
         product_invoice_data.move_id = id;
+
+        //Product exist
+        const product = await productService.getProducts(credentials, [["id", "=", product_id]]);
+        if (!product || product.length === 0) throw new Error(`product '${product_id}' does not exist`)
+
+        //Add product
         const { db, uid, password } = credentials
         const response = await axios.post(URL, {
             jsonrpc: "2.0",
@@ -109,14 +118,12 @@ exports.addProduct = async (credentials, product_invoice_data) => {
 exports.deleteProductInvoice = async (credentials, invoice_id, product_invoice_id) => {
     try {
         const id = parseInt(invoice_id);
-
-
         if (isNaN(id)) {
             throw new Error('invalid ID')
         }
 
-        const invoiceId = invoice.id;
-        console.log(product_invoice_id);
+        const invoiceId = id;
+
         const { db, uid, password } = credentials
         const response = await axios.post(URL, {
             jsonrpc: "2.0",

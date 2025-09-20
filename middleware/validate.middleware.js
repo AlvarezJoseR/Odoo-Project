@@ -8,8 +8,9 @@ const validate = (schema) => (req, res, next) => {
   if (error) {
 
     return res.status(422).json({
-      message: "Validación fallida",
-      details: error.details.map(d => d.message.replace(/["']/g, ''))
+      status: "Error",
+      message: "failed validation",
+      details: error.details.map(d => d.message)
     });
   }
 

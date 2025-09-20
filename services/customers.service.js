@@ -46,6 +46,8 @@ exports.getAllCustomer = async (credentials, filters = []) => {
         }, {
             headers: { 'Content-Type': 'application/json' }
         });
+        if (response.data.hasOwnProperty('error'))
+            return response.data;
         return response.data.result;
 
     } catch (error) {
@@ -102,11 +104,11 @@ exports.deleteCustomer = async (credentials, customer_id) => {
         const id = parseInt(customer_id);
 
         if (isNaN(id)) {
-            throw new Error('invalid ID' )
+            throw new Error('invalid ID')
         }
 
         //Verify customer exists
-        const customer = await this.getAllCustomer(credentials, [['id', "=", customer_id]]);
+        const customer = await this.getAllCustomer(credentials, [['id', "=", id]]);
         if (!customer || customer.length === 0) throw new Error('customer does not exist')
 
         //Delete Customer
@@ -121,7 +123,7 @@ exports.deleteCustomer = async (credentials, customer_id) => {
                 args: [
                     db, uid, password,
                     "res.partner", "write",
-                    [[customer_id], { active: false }]
+                    [[id], { active: false }]
                 ]
             },
             id: new Date().getTime()
@@ -176,7 +178,7 @@ exports.updateCustomer = async (credentials, customer_id, customer_data = {}) =>
             return response.data;
         return response.data.result;
     } catch (error) {
-        
+
         throw error;
     }
 }

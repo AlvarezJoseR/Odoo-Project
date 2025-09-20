@@ -237,7 +237,7 @@ exports.createInvoice = async (credentials, data) => {
 
         const invoice_id = await invoiceService.createInvoice(credentials, invoice_data);
         if (invoice_id.hasOwnProperty('error'))
-            throw new Error('invoice creation error ' + invoice_id.error.data.message);
+            throw new Error('invoice creation error' + invoice_id.error.data.message);
 
         //add products
         if (data.hasOwnProperty('products')) {
@@ -270,9 +270,6 @@ exports.deleteProductInvoice = async (credentials, invoice_id, product_delete_id
             if (response.hasOwnProperty('error'))
                 throw new Error('delete product error: ' + response.error.data.message);
         }
-
-        console.log(response)
-
         return true;
     } catch (e) {
         throw e

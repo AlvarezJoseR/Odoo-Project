@@ -7,8 +7,14 @@ const bankAccountRouters = require('./routers/bankAccount.routes.js')
 const apiRoutes = require('./routers/api.routes.js')
 const app = express()
 const port = process.env.PORT;
-app.use(express.json());
+const cookieSession = require('cookie-session');
 
+app.use(express.json());
+app.use(cookieSession({
+    name: 'session',                  
+    keys: [process.env.COOKIE_SECRET_KEY],        
+    maxAge: process.env.COOKIE_LIVE_TIME       
+}));
 
 //Routes
 app.use('/customer', customerRouters);
