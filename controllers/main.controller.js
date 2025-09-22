@@ -40,9 +40,6 @@ exports.createCustomer = async (req, res) => {
 
         //Create customer
         const new_customer = await mainService.createCustomer(credentials, customer_data);
-        if (new_customer.hasOwnProperty('error'))
-            res.status(400).json({ error: 'creation error', message: response.error.data.message });
-
 
         res.json({
             status: 200,
@@ -50,7 +47,9 @@ exports.createCustomer = async (req, res) => {
             data: new_customer
         });
     } catch (e) {
-        res.status(500).json({ status: 500, error: e.message });
+        const status = e.status || 500;
+        const message = e.message;
+        res.status(status).json({ status, message });
     }
 
 };
@@ -58,13 +57,14 @@ exports.createCustomer = async (req, res) => {
 exports.updateCustomer = async (req, res) => {
     try {
         const customer_data = req.body;
-        const customer_Id = req.params.id;
+        const customer_id = req.params.id;
         const credentials = req.session.user;
-        const response = await mainService.updateCustomer(credentials, customer_Id, customer_data);
+        const response = await mainService.updateCustomer(credentials, customer_id, customer_data);
         res.status(200).json({ status: 200, message: "Customer updated", data: response });
     } catch (e) {
-
-        res.status(500).json({ status: 500, error: e.message });
+        const status = e.status || 500;
+        const message = e.message;
+        res.status(status).json({ status: status, message });
     }
 
 };
@@ -76,23 +76,22 @@ exports.deleteCustomer = async (req, res) => {
         await mainService.deleteCustomer(credentials, customer_Id);
         res.status(200).json({ status: 200, message: "Customer deleted." });
     } catch (e) {
-        res.status(500).json({ status: 500, error: e.message });
+        const status = e.status || 500;
+        const message = e.message;
+        res.status(status).json({ status: status, message });
     }
-
 };
 
 exports.getCustomerById = async (req, res) => {
     try {
-        const customer_Id = req.params.id;
+        const customer_id = req.params.id;
         const credentials = req.session.user;
-        const response = await mainService.getCutomerById(credentials, customer_Id);
-        if (response.length < 1) {
-            res.status(400).json({ status: 400, message: `Customer with id '${customer_Id}' does not exist` })
-            return;
-        }
-        res.status(200).json({ status: 200, data: response });
+        const response = await mainService.getCutomerById(credentials, customer_id);
+        res.status(response.statusCode).json(response.data);
     } catch (e) {
-        res.status(500).json({ status: 500, error: e });
+        const status = e.status || 500;
+        const message = e.message;
+        res.status(status).json({ status: status, message });
     }
 
 };
@@ -115,7 +114,7 @@ exports.createProduct = async (req, res) => {
         const credentials = req.session.user;
         const product_data = req.body;
         const response = await mainService.createProduct(credentials, product_data);
-        res.status(200).json({ stats: 200, message: "Product created.", data: response });
+        res.status(200).json({ status: 200, message: "Product created.", data: response });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
@@ -262,7 +261,7 @@ exports.deleteProductInvoice = async (req, res) => {
         for (const product of product_delete_id) {
             try {
                 await mainService.deleteProductInvoice(credentials, invoice_id, product);
-            } catch (e) { 
+            } catch (e) {
                 errors.push(e.message);
             }
 
@@ -312,7 +311,9 @@ exports.getModels = async (req, res) => {
         const model = await mainService.getModels(credentials, model_name) || {};
         res.status(200).json({ status: 200, data: model });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        const status = e.status || 500;
+        const message = e.message;
+        res.status(status).json({ status: status, message });
     }
 
 };

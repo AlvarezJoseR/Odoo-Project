@@ -1,5 +1,3 @@
-const axios = require('axios');
-const URL = process.env.URL;
 const productService = require('./product.service');
 const odooQuery = require('../helper/odoo.query');
 
@@ -19,9 +17,7 @@ exports.getInvoice = async (credentials, filters = []) => {
     try {
         const response = await odooQuery.query(credentials, "search_read", "account.move", [filters], {});
         return response;
-
     } catch (e) {
-
         throw e
     }
 }
@@ -29,6 +25,7 @@ exports.getInvoice = async (credentials, filters = []) => {
 exports.addProduct = async (credentials, product_invoice_data) => {
     try {
         //Verify valid id
+        
         const id = parseInt(product_invoice_data.move_id);
         const product_id = product_invoice_data.product_id;
 

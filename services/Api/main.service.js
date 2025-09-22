@@ -15,9 +15,9 @@ const createCustomerSchema = require('../../schemas/Customer/create.customer.sch
 
 exports.createCustomer = async (credentials, customer_info) => {
     //Create customer
-    let new_customer_id;
-    let errors = [];
     try {
+        let new_customer_id;
+        let errors = [];
         const customer_fields = createCustomerSchema.describe().keys;
         const customer_data = {};
 
@@ -31,25 +31,25 @@ exports.createCustomer = async (credentials, customer_info) => {
         //create customer
         const customer_id = await customerService.createCustomer(credentials, customer_data);
         new_customer_id = customer_id;
-        if (customer_id.hasOwnProperty('error'))
-            throw new Error('customer creation error ' + response.error.data.message);
 
+
+        //Create bank account
+        if (customer_info.hasOwnProperty('bank_account')) {
+            for (const bank_account of customer_info.bank_account) {
+                bank_account.partner_id = new_customer_id;
+                try {
+                    await this.createBankAccount(credentials, bank_account);
+                } catch (e) { errors.push(e.message) }
+            }
+        }
+
+        //Return new customer data
+        const new_customer = await customerService.getAllCustomer(credentials, [['id', "=", new_customer_id]]);
+        return ({ customer: new_customer, errors: errors });
     } catch (e) {
         throw e;
     }
-    //Create bank account
-    if (customer_info.hasOwnProperty('bank_account')) {
-        for (const bank_account of customer_info.bank_account) {
-            bank_account.partner_id = new_customer_id;
-            try {
-                await this.createBankAccount(credentials, bank_account); 
-            } catch (e) { errors.push(e.message)}
-        }
-    }
 
-    //Return new customer data
-    const new_customer = await customerService.getAllCustomer(credentials, [['id', "=", new_customer_id]]);
-    return ({customer: new_customer, errors: errors});
 }
 
 exports.getCutomerById = async (credentials, customer_id) => {
@@ -83,7 +83,6 @@ exports.deleteCustomer = async (credentials, customer_id) => {
     try {
         const response = await customerService.deleteCustomer(credentials, customer_id);
         return (response);
-
     } catch (e) {
         throw e;
     }
@@ -92,11 +91,9 @@ exports.deleteCustomer = async (credentials, customer_id) => {
 exports.updateCustomer = async (credentials, customer_id, customer_data) => {
     try {
         await customerService.updateCustomer(credentials, customer_id, customer_data);
-        const response = await customerService.getAllCustomer(credentials, [['id', '=', customer_id]]);
+        const response = this.getCutomerById(credentials, customer_id);
         return (response);
-
     } catch (e) {
-
         throw e;
     }
 }
@@ -104,9 +101,10 @@ exports.updateCustomer = async (credentials, customer_id, customer_data) => {
 //Models
 exports.getModels = async (credentials, model) => {
     try {
-        const response = await odooQuery.query(credentials, 'fields_get', model, [], { attributes: ["string", "help", "type"] })
+        const { uid, db, password } = credentials;
+        const response = await odooQuery.query("object", 'execute_kw', [db, uid, password, model, 'fields_get', [], { attributes: ["string", "help", "type"] }]);
+        //const response = await odooQuery.query(credentials, 'fields_get', model, [], { attributes: ["string", "help", "type"] })
         return response;
-
     } catch (e) {
         throw e;
     }
