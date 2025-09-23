@@ -5,6 +5,11 @@ const app = express()
 const port = process.env.PORT;
 const cookieSession = require('cookie-session');
 
+//Routes
+const customerRoutes = require('./routers/customers.routes.js');
+const authRoutes = require('./routers/auth.routes.js');
+const bankAccountRoutes = require('./routers/bankAccount.routes.js');
+
 app.use(express.json());
 app.use(cookieSession({
     name: 'session',                  
@@ -14,6 +19,9 @@ app.use(cookieSession({
 
 //Routes
 app.use('/api', apiRoutes)
+app.use('/customer', customerRoutes);
+app.use('/auth', authRoutes);
+app.use('/bank-account', bankAccountRoutes)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

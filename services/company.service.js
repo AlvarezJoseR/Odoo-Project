@@ -2,7 +2,8 @@ const odooQuery = require('../helper/odoo.query');
 
 exports.getAllCompanies = async (credentials, filters = []) => {
     try {
-        const response = await odooQuery.query(credentials, "search_read", "res.company", [filters], {
+        const { db, uid, password } = credentials;
+        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "search_read", "res.company", [filters], {
             fields: [
                 "name",
                 "active",
@@ -15,9 +16,11 @@ exports.getAllCompanies = async (credentials, filters = []) => {
                 "create_date",
                 "user_ids",
             ]
-        });
-        return response;
+        }]);
+        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] };
+        if (response.success === false) return { statusCode: 400, message: "Error obteniendo las compañias.", data: [] };
+        return { statusCode: 200, message: "Compañias obtenidas.", data: response.data };
     } catch (e) {
-        throw e;
+        return { statusCode: 500, message: "Error interno.", data: []};
     }
 }

@@ -3,8 +3,17 @@ const odooQuery = require('../helper/odoo.query');
 exports.login = async (db, username, password) => {
   try {
     const response = await odooQuery.query("common", "login", [db, username, password]);
-    return response;
+    if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] };
+    if (response.success === false) return { statusCode: 400, message: "Error en las credenciales.", data: [] };
+
+    var token = jwt.sign({
+      db,
+      uid: response.data,
+      password,
+    }, 'shhhhh', { expiresIn: '1h' });
+    return { statusCode: 200, message: "Login exitoso.", data: token };
   } catch (e) {
-    throw e;
+    console.error(e);
+    return { statusCode: 500, message: "Error interno.", data: [] }
   }
 }
