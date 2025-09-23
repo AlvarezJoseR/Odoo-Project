@@ -7,7 +7,7 @@ exports.createInvoice = async (req, res) => {
         const invoice_data = req.body;
         const response = await invoiceService.createInvoice(credentials, invoice_data);
 
-        res.status(response.statusCode).json(response.data);
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -26,8 +26,8 @@ exports.addProductInvoice = async (req, res) => {
         for (const p of products) {
             await invoiceService.addProductInvoice(credentials, invoice_id, p);
         }
-        const invoice = await mainService.getInvoiceById(credentials, invoice_id);
-        res.status(200).json({ status: 200, message: "Products added.", data: invoice });
+        const invoice = await invoiceService.getInvoiceById(credentials, invoice_id);
+        res.status(invoice.statusCode).json(invoice);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -46,8 +46,8 @@ exports.deleteProductsInvoice = async (req, res) => {
         }
 
         //Get updated invoice
-        const invoice = await mainService.getInvoiceById(credentials, invoice_id);
-        res.status(invoice.statusCode).json(invoice.data);
+        const invoice = await invoiceService.getInvoiceById(credentials, invoice_id);
+        res.status(invoice.statusCode).json(invoice);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -62,7 +62,7 @@ exports.getInvoiceById = async (req, res) => {
         const invoice_id = req.params.id;
         const invoice = await invoiceService.getInvoiceById(credentials, invoice_id);
 
-        res.status(invoice.statusCode).json(invoice.data);
+        res.status(invoice.statusCode).json(invoice);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -77,7 +77,7 @@ exports.confirmInvoice = async (req, res) => {
         const invoice_id = req.params.id;
         const invoice = await invoiceService.confirmInvoice(credentials, invoice_id);
 
-        res.status(invoice.statusCode).json(invoice.data);
+        res.status(invoice.statusCode).json(invoice);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;

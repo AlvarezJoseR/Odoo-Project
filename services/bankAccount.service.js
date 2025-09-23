@@ -22,15 +22,13 @@ exports.createBankAccount = async (credentials, data) => {
 
         //Create bank account
         const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner.bank", "create", [data], {}]);
-        console.log(response)
         if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] };
         if (response.success === false) return { statusCode: 400, message: "Error creando la cuenta bancaria.", data: [response.data.data.message] };
         const bankAccount = await this.getBankAccountById(credentials, response.data)
-        console.log(bankAccount)
         return { statusCode: 200, message: "Cuenta bancaria creada.", data: bankAccount.data };
 
     } catch (e) {
-        console.log(e)
+        console.error(e);
         return { statusCode: 500, message: "Error interno.", data: [] };
     }
 }

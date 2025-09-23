@@ -7,7 +7,7 @@ exports.createProduct = async (req, res) => {
         const credentials = req.session.user;
         const product_data = req.body;
         const response = await productService.createProduct(credentials, product_data);
-        res.status(response.statusCode).json(response.data);
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -21,7 +21,7 @@ exports.getProductById = async (req, res) => {
         const product_id = req.params.id;
         const credentials = req.session.user;
         const response = await productService.getProductById(credentials, product_id);
-        res.status(response.statusCode).json(response.data);
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -35,7 +35,7 @@ exports.deleteProduct = async (req, res) => {
         const product_id = req.params.id;
         const credentials = req.session.user;
         const response = await productService.deleteProduct(credentials, product_id);
-        res.status(response.statusCode).json(response.data);
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -51,7 +51,7 @@ exports.updateProduct = async (req, res) => {
         const product_data = req.body;
 
         const response = await productService.updateProduct(credential, product_id, product_data);
-        res.status(response.statusCode).json(response.data );
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -66,7 +66,7 @@ exports.getProductsByFilters = async (req, res) => {
         const filters = req.query
         const response = await productService.getProductsByFilters(credentials, filters);
 
-        res.status(response.statusCode).json(response.data);
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;

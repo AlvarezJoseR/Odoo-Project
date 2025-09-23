@@ -9,6 +9,8 @@ const cookieSession = require('cookie-session');
 const customerRoutes = require('./routers/customers.routes.js');
 const authRoutes = require('./routers/auth.routes.js');
 const bankAccountRoutes = require('./routers/bankAccount.routes.js');
+const productRoutes = require('./routers/product.routes.js');
+const invoiceRoutes = require('./routers/invoices.routes.js');
 
 app.use(express.json());
 app.use(cookieSession({
@@ -18,10 +20,13 @@ app.use(cookieSession({
 }));
 
 //Routes
-app.use('/api', apiRoutes)
+//app.use('/api', apiRoutes)
 app.use('/customer', customerRoutes);
 app.use('/auth', authRoutes);
 app.use('/bank-account', bankAccountRoutes)
+app.use('/product', productRoutes);
+app.use('/invoice', invoiceRoutes);
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

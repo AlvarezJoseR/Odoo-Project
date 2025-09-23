@@ -248,7 +248,7 @@ exports.createInvoice = async (credentials, data) => {
         }
     }
 
-    const invoice = await invoiceService.getInvoice(credentials, [['id', '=', new_invoice_id]])
+    const invoice = await invoiceService.getInvoiceById(credentials, new_invoice_id);
     return invoice;
 
 }
@@ -273,7 +273,7 @@ exports.deleteProductInvoice = async (credentials, invoice_id, product_delete_id
 
 exports.getInvoiceById = async (credentials, invoice_id) => {
     try {
-        const response = await invoiceService.getInvoice(credentials, [["id", "=", invoice_id]]);
+        const response = await invoiceService.getInvoiceById(credentials, invoice_id);
         return response;
     } catch (e) {
         throw e
