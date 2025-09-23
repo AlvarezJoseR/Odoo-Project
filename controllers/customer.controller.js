@@ -35,7 +35,6 @@ exports.deleteCustomer = async (req, res) => {
     try {
         const customer_Id = req.params.id;
         const credentials = req.session.user;
-        const response = await customerService.deleteCustomer(credentials, customer_Id);
         res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
