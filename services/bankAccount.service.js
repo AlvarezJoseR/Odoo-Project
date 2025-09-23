@@ -21,13 +21,16 @@ exports.createBankAccount = async (credentials, data) => {
         }
 
         //Create bank account
-        const bankAccount = await bankAccountService.getBankAccount(credentials, [['id', '=', bank_account_id]])
-        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "create", "res.partner.bank", [data], {}]);
-        if (response.success === false && response.error === true) throw new Error('internal error')
-        if (response.success === false) throw new Error('error creando la cuenta bancaria')
-        return { statusCode: 200, message: "Cuenta bancaria creada.", data: response.data };
+        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner.bank", "create", [data], {}]);
+        console.log(response)
+        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] };
+        if (response.success === false) return { statusCode: 400, message: "Error creando la cuenta bancaria.", data: [response.data.data.message] };
+        const bankAccount = await this.getBankAccountById(credentials, response.data)
+        console.log(bankAccount)
+        return { statusCode: 200, message: "Cuenta bancaria creada.", data: bankAccount.data };
 
     } catch (e) {
+        console.log(e)
         return { statusCode: 500, message: "Error interno.", data: [] };
     }
 }
@@ -43,11 +46,13 @@ exports.deleteBankAcount = async (credentials, bank_account_id) => {
         }
 
         //Verify bank account exists
-        const bank_account = await this.getBankAccount(credentials, [['id', "=", bank_account_id]]);
-        if (!bank_account || bank_account.length === 0) return { statusCode: 404, message: `La cuenta bancaria con id '${bank_account_id}' no existe`, data: [] };
-
+        const bank_account = await this.getBankAccountById(credentials, id);
+        console.log(bank_account.statusCode == 404)
+        if (bank_account.statusCode == 404) {
+            return bank_account;
+        }
         //Delete bank account
-        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "write", "res.partner.bank", [[id], { active: false }], {}]);
+        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner.bank", "write", [[id], { active: false }], {}]);
         if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] }
         if (response.success === false) return { statusCode: 400, message: "Error eliminando la cuenta bancaria.", data: [] }
         return { statusCode: 200, message: "Cuenta bancaria eliminada.", data: response.data };
@@ -60,7 +65,7 @@ exports.deleteBankAcount = async (credentials, bank_account_id) => {
 exports.getBankAccountByFilters = async (credentials, filters = []) => {
     try {
         const { db, uid, password } = credentials;
-        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "search_read", "res.partner.bank", [filters], {}]);
+        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner.bank", "search_read", [filters], {}]);
         if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] }
         if (response.success === false) return { statusCode: 400, message: "Error obteniendo las cuentas bancarias.", data: [] }
         return { statusCode: 200, message: "Cuentas bancarias obtenidas.", data: response.data };
@@ -72,11 +77,19 @@ exports.getBankAccountByFilters = async (credentials, filters = []) => {
 
 exports.getBankAccountById = async (credentials, bankAccountId) => {
     try {
-        const response = this.getBankAccountByFilters(credentials, [['id', '=', bankAccountId]]);
+
+        const id = Number(bankAccountId);
+        if (isNaN(id)) {
+            return { statusCode: 400, message: `El id ${id} no es un id valido.`, data: [] }
+        }
+
+        const response = await this.getBankAccountByFilters(credentials, [['id', '=', bankAccountId]]);
+
         if (response.data.length === 0) return { statusCode: 404, message: `La cuenta bancaria con id '${bankAccountId}' no existe`, data: [] }
-        return {statusCode: 200, message: "Cuenta bancaria obtenida.", data: response.data[0] };
+        return { statusCode: 200, message: "Cuenta bancaria obtenida.", data: response.data };
 
     } catch (e) {
+        console.error(e);
         return { statusCode: 500, message: "Error interno.", data: [] }
     }
 }

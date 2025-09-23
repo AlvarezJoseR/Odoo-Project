@@ -6,7 +6,7 @@ exports.createBankAccount = async (req, res) => {
         const credentials = req.session.user;
         const bank_account_data = req.body;
         const response = await bankAccountService.createBankAccount(credentials, bank_account_data);
-        res.status(response.statusCode).json(response.data);
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode || 500;
         const message = e.message;
@@ -20,7 +20,7 @@ exports.deleteBankAccount = async (req, res) => {
         const credentials = req.session.user;
         const bank_account_id = req.params.id;
         const response = await bankAccountService.deleteBankAcount(credentials, bank_account_id);
-        res.status(response.statusCode).json(response.data);
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -34,7 +34,7 @@ exports.getBankAccountById = async (req, res) => {
         const credentials = req.session.user;
         const bank_account_id = req.params.id;
         const response = await bankAccountService.getBankAccountById(credentials, bank_account_id);
-        res.status(response.statusCode).json(response.data);
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;

@@ -1,5 +1,5 @@
 const odooQuery = require('../helper/odoo.query');
-
+const jwt = require('jsonwebtoken');
 exports.login = async (db, username, password) => {
   try {
     const response = await odooQuery.query("common", "login", [db, username, password]);

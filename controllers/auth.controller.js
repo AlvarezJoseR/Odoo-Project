@@ -7,7 +7,7 @@ exports.login = async (req, res) => {
         const { db, userName, password } = req.body;
         const response = await authService.login(db, userName, password);
 
-        res.status(response.statusCode).json(response.data);
+        res.status(response.statusCode).json({token: response.data});
     } catch (e) {
         const status = e.status || 500;
         const message = e.message;

@@ -1,8 +1,14 @@
 const odooQuery = require('../helper/odoo.query');
 
+
+//Schemas
+const createCustomerSchema = require('../schemas/Customer/create.customer.schema.js');
+
+//Services
+const bankAccountService = require('./bankAccount.service.js');
+
 exports.getCustomerById = async (credentials, customer_id) => {
     try {
-        const { db, uid, password } = credentials;
         const id = Number(customer_id);
         if (isNaN(id)) {
             return { statusCode: 400, message: `El id ${id} no es un id valido.`, data: [] };
@@ -12,7 +18,7 @@ exports.getCustomerById = async (credentials, customer_id) => {
         const response = await this.getCustomerByFilters(credentials, [['id', '=', customer_id]]);
         if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] }
         if (response.success === false) return { statusCode: 400, message: "Error obteniendo los clientes.", data: [] }
-        if (!response || response.length === 0) return { statusCode: 404, message: `El cliente con id '${customer_id}' no existe`, data: [] };
+        if (!response || response.data.length === 0) return { statusCode: 404, message: `El cliente con id '${customer_id}' no existe`, data: [] };
 
         return { statusCode: 200, message: "Clientes obtenidos.", data: response.data };
     } catch (e) {
@@ -75,7 +81,7 @@ exports.createCustomer = async (credentials, data) => {
         }
 
         //create customer
-        const response = odooQuery.query("object", "execute_kw", [db, uid, password, "create", "res.partner", [customer_data], {}]);
+        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner", "create", [customer_data], {}]);
         if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] };
         if (response.success === false) return { statusCode: 400, message: "Error creando el cliente.", data: [] };
 
@@ -83,14 +89,15 @@ exports.createCustomer = async (credentials, data) => {
         if (data.hasOwnProperty('bank_account')) {
             for (const bank_account of data.bank_account) {
                 bank_account.partner_id = response.data;
-                try {
-                    await this.createBankAccount(credentials, bank_account);
-                } catch (e) { errors.push({ status: 400, message: e.message, data: [] }) }
+
+                await bankAccountService.createBankAccount(credentials, bank_account);
+
             }
         }
 
         //Return new customer data
-        const new_customer = await this.getAllCustomer(credentials, [['id', "=", response.data]]);
+        const new_customer = await this.getCustomerById(credentials, response.data);
+
         return { statusCode: 200, message: "Cliente creado.", data: new_customer.data };
 
     } catch (e) {
@@ -114,12 +121,12 @@ exports.deleteCustomer = async (credentials, customer_id) => {
 
         //Verify customer exists
         const customer = await this.getCustomerByFilters(credentials, [['id', "=", id]]);
-        if (!customer || customer.length === 0) {
+        if (!customer || customer.data.length === 0) {
             return { statusCode: 404, message: `El cliente con id '${customer_id}' no existe`, data: [] };
         }
 
         //Delete Customer
-        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "write", "res.partner", [[id], { active: false }], {}]);
+        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner", "write", [[id], { active: false }], {}]);
         if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] };
         if (response.success === false) return { statusCode: 400, message: "Error eliminando el cliente.", data: [] };
         return { statusCode: 200, message: "Cliente eliminado.", data: response.data };
@@ -134,6 +141,7 @@ exports.deleteCustomer = async (credentials, customer_id) => {
  */
 exports.updateCustomer = async (credentials, customer_id, customer_data = {}) => {
     try {
+        const { db, uid, password } = credentials;
         //Verify valid id
         const id = Number(customer_id);
         if (isNaN(id)) {
@@ -141,18 +149,19 @@ exports.updateCustomer = async (credentials, customer_id, customer_data = {}) =>
         }
 
         //Verify customer exists
-        const customer = await this.getCustomerByFilters(credentials, [['id', "=", customer_id]]);
-        if (!customer || customer.length === 0) {
+        const customer = await this.getCustomerById(credentials, customer_id);
+        if (!customer || customer.data.length === 0) {
             return { statusCode: 404, message: `El cliente con id '${customer_id}' no existe`, data: [] };
         }
 
         //Update customer
-        const response = await odooQuery.query(credentials, "write", "res.partner", [[id], customer_data], {});
+        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner", "write", [[id], customer_data], {}]);
+
         if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] };
         if (response.success === false) return { statusCode: 400, message: "Error actualizando el cliente.", data: [] };
 
         //Return updated customer data
-        const updated_customer = await this.getAllCustomer(credentials, [['id', "=", id]]);
+        const updated_customer = await this.getCustomerById(credentials, id);
         return { statusCode: 200, message: "Cliente actualizado.", data: updated_customer.data };
     } catch (e) {
         return { statusCode: 500, message: "Error interno.", data: [] };

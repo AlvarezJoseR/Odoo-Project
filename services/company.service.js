@@ -3,7 +3,7 @@ const odooQuery = require('../helper/odoo.query');
 exports.getAllCompanies = async (credentials, filters = []) => {
     try {
         const { db, uid, password } = credentials;
-        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "search_read", "res.company", [filters], {
+        const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.company","search_read", [filters], {
             fields: [
                 "name",
                 "active",

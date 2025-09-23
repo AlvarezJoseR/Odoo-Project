@@ -6,8 +6,8 @@ exports.createCustomer = async (req, res) => {
         const credentials = req.session.user;
 
         //Create customer
-        const new_customer = await customerService.createCustomer(credentials, customer_data);
-        req.status(new_customer.statusCode).json(new_customer.data);
+        const response = await customerService.createCustomer(credentials, customer_data);
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -22,7 +22,7 @@ exports.updateCustomer = async (req, res) => {
         const credentials = req.session.user;
         const response = await customerService.updateCustomer(credentials, customer_id, customer_data);
 
-        res.status(response.statusCode).json(response.data);
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -35,7 +35,7 @@ exports.deleteCustomer = async (req, res) => {
         const customer_Id = req.params.id;
         const credentials = req.session.user;
         const response = await customerService.deleteCustomer(credentials, customer_Id);
-        res.status(response.statusCode).json(response.data);
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -47,8 +47,8 @@ exports.getCustomerById = async (req, res) => {
     try {
         const customer_id = req.params.id;
         const credentials = req.session.user;
-        const response = await customerService.getCustomerById(credentials, [['id', '=', customer_id]]);
-        res.status(response.statusCode).json(response.data);
+        const response = await customerService.getCustomerById(credentials, customer_id);
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
@@ -59,9 +59,17 @@ exports.getCustomerById = async (req, res) => {
 exports.getCustomerByFilters = async (req, res) => {
     try {
         const filters = req.query
+        fetch_filters = [];
+        if (filters) {
+            for (const [key, value] of Object.entries(filters)) {
+                if (value !== undefined) {
+                    fetch_filters.push([key, 'ilike', value]);
+                }
+            }
+        }
         const credentials = req.session.user;
-        const response = await customerService.getCustomerByFilters(credentials, filters)
-        res.status(response.statusCode).json(response.data);
+        const response = await customerService.getCustomerByFilters(credentials, fetch_filters)
+        res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
         const message = e.message;
