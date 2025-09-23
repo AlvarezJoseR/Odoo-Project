@@ -4,7 +4,7 @@ exports.login = async (db, username, password) => {
   try {
     const response = await odooQuery.query("common", "login", [db, username, password]);
     if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] };
-    if (response.success === false) return { statusCode: 400, message: "Error en las credenciales.", data: [] };
+    if (response.success === false || response.data === false) return { statusCode: 400, message: "Error en las credenciales.", data: [] };
 
     var token = jwt.sign({
       db,
