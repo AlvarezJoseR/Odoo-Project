@@ -82,8 +82,8 @@ exports.createCustomer = async (credentials, data) => {
 
         //create customer
         const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner", "create", [customer_data], {}]);
-        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [e.message] };
-        if (response.success === false) return { statusCode: 400, message: "Error creando el cliente.", data: [e.message] };
+        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] };
+        if (response.success === false) return { statusCode: 400, message: "Error creando el cliente.", data: [response.data.data.message] };
 
         //Create bank account
         if (data.hasOwnProperty('bank_account')) {
@@ -116,19 +116,19 @@ exports.deleteCustomer = async (credentials, customer_id) => {
         const id = Number(customer_id);
 
         if (isNaN(id)) {
-            return { statusCode: 400, message: `El id ${id} no es un id valido.`, data: [e.message] };
+            return { statusCode: 400, message: `El id ${customer_id} no es un id valido.`, data: [] };
         }
 
         //Verify customer exists
         const customer = await this.getCustomerByFilters(credentials, [['id', "=", id]]);
         if (!customer || customer.data.length === 0) {
-            return { statusCode: 404, message: `El cliente con id '${customer_id}' no existe`, data: [e.message] };
+            return { statusCode: 404, message: `El cliente con id '${customer_id}' no existe`, data: [] };
         }
 
         //Delete Customer
         const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner", "write", [[id], { active: false }], {}]);
-        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [e.message] };
-        if (response.success === false) return { statusCode: 400, message: "Error eliminando el cliente.", data: [e.message] };
+        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] };
+        if (response.success === false) return { statusCode: 400, message: "Error eliminando el cliente.", data: [response.data.data.message] };
         return { statusCode: 200, message: "Cliente eliminado.", data: response.data };
     } catch (e) {
         return { statusCode: 500, message: "Error interno.", data: [e.message] };
@@ -145,7 +145,7 @@ exports.updateCustomer = async (credentials, customer_id, customer_data = {}) =>
         //Verify valid id
         const id = Number(customer_id);
         if (isNaN(id)) {
-            return { statusCode: 400, message: `El id ${id} no es un id valido.`, data: [] };
+            return { statusCode: 400, message: `El id ${customer_id} no es un id valido.`, data: [] };
         }
 
         //Verify customer exists

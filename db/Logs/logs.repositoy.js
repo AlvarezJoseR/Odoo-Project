@@ -20,6 +20,11 @@ const logsRepository = {
                 VALUES (NOW(), ?, ?, ?, ?);
             `;
 
+            // const query = `INSERT INTO odoo_request_logs (service, method, args, response, created_at ) VALUES (?, ?, ?, ?, NOW())`
+            //
+            //
+
+
             const result = await dbConnection.executeQuery(query, logData);
             return result;
         } catch (error) {

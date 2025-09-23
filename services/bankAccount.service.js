@@ -77,7 +77,7 @@ exports.getBankAccountById = async (credentials, bankAccountId) => {
 
         const id = Number(bankAccountId);
         if (isNaN(id)) {
-            return { statusCode: 400, message: `El id ${id} no es un id valido.`, data: [] }
+            return { statusCode: 400, message: `El id '${bankAccountId}' no es un id de cuenta bancaria valido.`, data: [] }
         }
 
         const response = await this.getBankAccountByFilters(credentials, [['id', '=', bankAccountId]]);

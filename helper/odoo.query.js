@@ -1,6 +1,6 @@
 const axios = require('axios');
 const URL = process.env.URL;
-
+const logRepository = require('../db/Logs/logs.repositoy.js');
 /**
  * Ejecuta una consulta genérica a Odoo usando JSON-RPC.
  *
@@ -27,6 +27,8 @@ exports.query = async (
             headers: { 'Content-Type': 'application/json' }
         });
 
+        // logRepository.createLogs([service, method, JSON.stringify(args), JSON.stringify(data)]);
+
         if (data && data.error) {
             const Msg =
                 data.error?.data?.message ||
@@ -37,7 +39,7 @@ exports.query = async (
             const error = new Error(Msg);
             error.status = 502;
 
-            
+
 
             return { success: false, data: data.error };
         }

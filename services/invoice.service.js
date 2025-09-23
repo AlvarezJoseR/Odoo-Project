@@ -43,7 +43,7 @@ exports.getInvoiceById = async (credentials, invoice_id) => {
         //Verify valid id
         const id = Number(invoice_id);
         if (isNaN(id)) {
-            return { statusCode: 400, message: 'ID inválido', data: [] }
+            return { statusCode: 400, message: `El id '${invoice_id}' no es un id de una factura valida.`, data: [] }
         }
 
         //Verify invoice exists
@@ -66,10 +66,14 @@ exports.addProductInvoice = async (credentials, invoice_id, product_invoice_data
         const { db, uid, password } = credentials;
         const product_id = product_invoice_data.product_id;
         //Verify valid id
-        const id = Number(invoice_id);
+        let id = Number(invoice_id);
 
         if (isNaN(id)) {
-            return { statusCode: 400, message: 'ID inválido', data: [] }
+            return { statusCode: 400, message: `El id '${invoice_id}' no es un id de una factura valida.`, data: [] }
+        }
+        id = Number(product_id);
+        if (isNaN(id)) {
+            return { statusCode: 400, message: `El id '${product_id}' no es un id de producto valido.`, data: [] }
         }
 
         product_invoice_data.move_id = id;
@@ -100,7 +104,7 @@ exports.deleteProductInvoice = async (credentials, invoice_id, product_invoice_i
         const { db, uid, password } = credentials;
         const id = parseInt(invoice_id);
         if (isNaN(id)) {
-            return { statusCode: 400, message: 'ID inválido', data: [] }
+            return { statusCode: 400, message: `El id '${invoice_id}' no es un id valido.`, data: [] }
         }
 
         const invoice = await this.getInvoiceById(credentials, invoice_id);
