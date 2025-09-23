@@ -52,13 +52,13 @@ exports.getCustomerByFilters = async (credentials, filters = [], fields = [
         const { db, uid, password } = credentials;
         const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner", "search_read", [filters], { fields }]);
 
-        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] }
-        if (response.success === false) return { statusCode: 400, message: "Error obteniendo los clientes.", data: [] }
+        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [e.message] }
+        if (response.success === false) return { statusCode: 400, message: "Error obteniendo los clientes.", data: [e.message] }
 
         return { statusCode: 200, message: "Clientes obtenidos.", data: response.data };
     } catch (e) {
         console.error(e);
-        return { statusCode: 500, message: "Error interno.", data: [] }
+        return { statusCode: 500, message: "Error interno.", data: [e.message] }
     }
 }
 
@@ -82,8 +82,8 @@ exports.createCustomer = async (credentials, data) => {
 
         //create customer
         const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner", "create", [customer_data], {}]);
-        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] };
-        if (response.success === false) return { statusCode: 400, message: "Error creando el cliente.", data: [] };
+        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [e.message] };
+        if (response.success === false) return { statusCode: 400, message: "Error creando el cliente.", data: [e.message] };
 
         //Create bank account
         if (data.hasOwnProperty('bank_account')) {
@@ -101,7 +101,7 @@ exports.createCustomer = async (credentials, data) => {
         return { statusCode: 200, message: "Cliente creado.", data: new_customer.data };
 
     } catch (e) {
-        return { statusCode: 500, message: "Error interno.", data: [] };
+        return { statusCode: 500, message: "Error interno.", data: [e.message] };
     }
 }
 
@@ -116,22 +116,22 @@ exports.deleteCustomer = async (credentials, customer_id) => {
         const id = Number(customer_id);
 
         if (isNaN(id)) {
-            return { statusCode: 400, message: `El id ${id} no es un id valido.`, data: [] };
+            return { statusCode: 400, message: `El id ${id} no es un id valido.`, data: [e.message] };
         }
 
         //Verify customer exists
         const customer = await this.getCustomerByFilters(credentials, [['id', "=", id]]);
         if (!customer || customer.data.length === 0) {
-            return { statusCode: 404, message: `El cliente con id '${customer_id}' no existe`, data: [] };
+            return { statusCode: 404, message: `El cliente con id '${customer_id}' no existe`, data: [e.message] };
         }
 
         //Delete Customer
         const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner", "write", [[id], { active: false }], {}]);
-        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] };
-        if (response.success === false) return { statusCode: 400, message: "Error eliminando el cliente.", data: [] };
+        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [e.message] };
+        if (response.success === false) return { statusCode: 400, message: "Error eliminando el cliente.", data: [e.message] };
         return { statusCode: 200, message: "Cliente eliminado.", data: response.data };
     } catch (e) {
-        return { statusCode: 500, message: "Error interno.", data: [] };
+        return { statusCode: 500, message: "Error interno.", data: [e.message] };
     }
 }
 
@@ -157,14 +157,14 @@ exports.updateCustomer = async (credentials, customer_id, customer_data = {}) =>
         //Update customer
         const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner", "write", [[id], customer_data], {}]);
 
-        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] };
-        if (response.success === false) return { statusCode: 400, message: "Error actualizando el cliente.", data: [] };
+        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] };
+        if (response.success === false) return { statusCode: 400, message: "Error actualizando el cliente.", data: [response.data.data.message] };
 
         //Return updated customer data
         const updated_customer = await this.getCustomerById(credentials, id);
         return { statusCode: 200, message: "Cliente actualizado.", data: updated_customer.data };
     } catch (e) {
-        return { statusCode: 500, message: "Error interno.", data: [] };
+        return { statusCode: 500, message: "Error interno.", data: [e.message] };
     }
 }
 

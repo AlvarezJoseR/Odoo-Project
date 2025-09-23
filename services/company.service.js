@@ -17,10 +17,10 @@ exports.getAllCompanies = async (credentials, filters = []) => {
                 "user_ids",
             ]
         }]);
-        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] };
-        if (response.success === false) return { statusCode: 400, message: "Error obteniendo las compañias.", data: [] };
+        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] };
+        if (response.success === false) return { statusCode: 400, message: "Error obteniendo las compañias.", data: [response.data.data.message] };
         return { statusCode: 200, message: "Compañias obtenidas.", data: response.data };
     } catch (e) {
-        return { statusCode: 500, message: "Error interno.", data: []};
+        return { statusCode: 500, message: "Error interno.", data: [e.message] };
     }
 }

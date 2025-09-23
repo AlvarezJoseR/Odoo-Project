@@ -36,6 +36,9 @@ exports.query = async (
 
             const error = new Error(Msg);
             error.status = 502;
+
+            
+
             return { success: false, data: data.error };
         }
         return { success: true, data: data.result};

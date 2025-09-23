@@ -4,13 +4,13 @@ exports.createBank = async (credentials, data) => {
     try {
         const {db, uid, password} = credentials;
         const response = await odooQuery.query("object", "execute_kw",[db, uid, password, "res.bank", "create", [data], {}] );
-        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] };
-        if (response.success === false) return { statusCode: 400, message: "Error creando el banco.", data: [] };
+        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] };
+        if (response.success === false) return { statusCode: 400, message: "Error creando el banco.", data: [response.data.data.message] };
         return { statusCode: 200, message: "Banco creado.", data: response.data };
 
     } catch (e) {
         console.error(e);
-        return { statusCode: 500, message: "Error interno.", data: [] }
+        return { statusCode: 500, message: "Error interno.", data: [e.message] }
     }
 }
 
@@ -18,11 +18,11 @@ exports.getBank = async (credentials, filters = []) => {
     try {
         const {db, uid, password} = credentials;
         const response = await odooQuery.query("object", "execute_kw",[db, uid, password, "res.bank", "search_read", [filters], {}] );
-        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] };
-        if (response.success === false) return { statusCode: 400, message: "Error obteniendo los bancos.", data: [] };
+        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] };
+        if (response.success === false) return { statusCode: 400, message: "Error obteniendo los bancos.", data: [response.data.data.message] };
         return { statusCode: 200, message: "Bancos obtenidos.", data: response.data };
     } catch (e) {
         console.error(e);
-        return { statusCode: 500, message: "Error interno.", data: [] }
+        return { statusCode: 500, message: "Error interno.", data: [e.message] }
     }
 }

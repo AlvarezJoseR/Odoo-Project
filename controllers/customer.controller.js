@@ -1,5 +1,5 @@
 const customerService = require('../services/customers.service.js');
-
+const logsRepository = require('../db/Logs/logs.repositoy.js');
 exports.createCustomer = async (req, res) => {
     try {
         const customer_data = req.body;
@@ -7,6 +7,7 @@ exports.createCustomer = async (req, res) => {
 
         //Create customer
         const response = await customerService.createCustomer(credentials, customer_data);
+        logsRepository.createLogs([req.originalUrl, response.statusCode, JSON.stringify(response), req.method]);
         res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;
