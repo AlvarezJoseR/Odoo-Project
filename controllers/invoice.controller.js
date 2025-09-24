@@ -1,5 +1,5 @@
 const invoiceService = require("../services/invoice.service");
-
+const attachmentService = require("../services/attachment.service");
 //Invoices
 exports.createInvoice = async (req, res) => {
     try {
@@ -84,4 +84,33 @@ exports.confirmInvoice = async (req, res) => {
         res.status(status).json({ status: status, message });
     }
 
+};
+
+exports.addAttachment = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const invoice_id = req.params.id;
+        const file = req.file;
+        const response = await attachmentService.createAttachment(credentials, "account.move", invoice_id, file);
+
+        res.status(response.statusCode).json(response);
+    } catch (e) {
+        const status = e.statusCode;
+        const message = e.message;
+        res.status(status).json({ status: status, message });
+    }
+};
+
+exports.deleteAttachment = async (req, res) => {
+    try {
+        const credentials = req.session.user;
+        const attachment_id = req.params.id;
+        const response = await attachmentService.deleteAttachment(credentials, attachment_id);
+
+        res.status(response.statusCode).json(response);
+    } catch (e) {
+        const status = e.statusCode;
+        const message = e.message;
+        res.status(status).json({ status: status, message });
+    }
 };

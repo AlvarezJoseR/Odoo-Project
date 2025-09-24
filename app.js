@@ -10,6 +10,8 @@ const authRoutes = require('./routers/auth.routes.js');
 const bankAccountRoutes = require('./routers/bankAccount.routes.js');
 const productRoutes = require('./routers/product.routes.js');
 const invoiceRoutes = require('./routers/invoices.routes.js');
+const attachmentRoutes = require('./routers/Attachment.routes.js');
+const helpRoutes = require('./routers/util.routes.js');
 
 //Db Connection
 const dbConnection = require('./db/db.connection.js');
@@ -27,6 +29,7 @@ dbConnection.inicializar(
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    connectionLimit: 10,
   }
 );
 
@@ -36,6 +39,9 @@ app.use('/auth', authRoutes);
 app.use('/bank-account', bankAccountRoutes)
 app.use('/product', productRoutes);
 app.use('/invoice', invoiceRoutes);
+app.use('/attachment', attachmentRoutes);
+app.use('/help', helpRoutes);
+
 
 
 app.listen(port, () => {

@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
+
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/' })
+
 //Middleware
 const validator = require('../middleware/validate.middleware');
 const sessionValidator = require('../middleware/checkSession.middleware.js');
@@ -20,5 +24,7 @@ router.put('/addproduct/:id', sessionValidator, validator(addProductSchema), inv
 router.delete('/deleteproduct/:id', sessionValidator,validator(deleteProductsInvoiceSchema), invoiceController.deleteProductsInvoice)
 router.get('/:id', sessionValidator, invoiceController.getInvoiceById);
 router.post('/confirm/:id', sessionValidator, invoiceController.confirmInvoice);
+router.post('/uploadattachment/:id', upload.single('file'), sessionValidator, invoiceController.addAttachment);
+
 
 module.exports = router;

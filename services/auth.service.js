@@ -1,5 +1,6 @@
 const odooQuery = require('../helper/odoo.query');
 const jwt = require('jsonwebtoken');
+const logsRepository = require('../db/Logs/logs.repositoy.js');
 
 /**
  * Realiza el proceso de autenticación contra un servidor Odoo y genera un token JWT si las credenciales son válidas.
@@ -17,19 +18,33 @@ const jwt = require('jsonwebtoken');
  *  - `data` {string|Array} - Si el login es exitoso, contiene el token JWT. En caso contrario, es un array vacío.
  *
  */
-exports.login = async (db, username, password) => {
+exports.login = async (db, username, password, req) => {
   try {
+   // Realiza la llamada a Odoo para autenticar al usuario
     const response = await odooQuery.query("common", "login", [db, username, password],);
 
-    if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data] };
-    if (response.success === false || response.data === false) return { statusCode: 400, message: "Error en las credenciales.", data: [response.data] };
+    let res = {};
 
-    var token = jwt.sign({
-      db,
-      uid: response.data,
-      password,
-    }, 'shhhhh', { expiresIn: '1h' });
-    return { statusCode: 200, message: "Login exitoso.", data: token };
+    if (response.success === false && response.error === true) {
+      //Error interno de odoo
+      res = { statusCode: 500, message: "Error interno.", data: [response.data] };
+    } else if (response.success === false || response.data === false) {
+      //Credenciales invalidas
+      res = { statusCode: 400, message: "Error en las credenciales.", data: [response.data] };
+    } else {
+      //Login exitoso, genera el token JWT
+      var token = jwt.sign({
+        db,
+        uid: response.data,
+        password,
+      }, 'shhhhh', { expiresIn: '1h' });
+      
+      res = { statusCode: 200, message: "Login exitoso.", data: token };
+    }
+    // Genera
+    logsRepository.createLogs([req.originalUrl, res.statusCode, JSON.stringify(res), req.method]);
+    return res;
+
   } catch (e) {
     console.error(e);
     return { statusCode: 500, message: "Error interno.", data: [] }
