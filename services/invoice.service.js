@@ -109,14 +109,16 @@ exports.addProductInvoice = async (credentials, invoice_id, product_invoice_data
 
         //Product exist
         const product = await productService.getProductById(credentials, product_id);
-        if (!product || product.length === 0) return { statusCode: 404, message: `El producto con id '${product_id}' no existe`, data: [] };
+        console.log(product);
+        if(product.statusCode !== 200) return product;
+        if (!product || product.data.length === 0) return { statusCode: 404, message: `El producto con id '${product_id}' no existe`, data: [] };
 
         //Add product
         const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "account.move.line",  "create", [product_invoice_data], {}]);
         if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] }
         if (response.success === false) return { statusCode: 400, message: "Error agregando el producto a la factura.", data: [response.data.data.message] }
         
-        return { statusCode: 200, message: "Producto agregado a la factura.", data: updaded_invoice.data };
+        return { statusCode: 200, message: "Producto agregado a la factura.", data: response.data };
 
     } catch (error) {
         console.error(error);

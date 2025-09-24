@@ -25,17 +25,15 @@ exports.getCustomerById = async (credentials, customer_id) => {
 
         //Verify customer exists
         const response = await this.getCustomerByFilters(credentials, [['id', '=', customer_id]]);
-        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [] }
-        if (response.success === false) return { statusCode: 400, message: "Error obteniendo los clientes.", data: [] }
+        if (response.statusCode === 500 ) return { statusCode: 500, message: "Error interno.", data: [response.data] }
+        if (response.statusCode === 400) return { statusCode: 400, message: "Error obteniendo los clientes.", data: [response.data] }
         if (!response || response.data.length === 0) return { statusCode: 404, message: `El cliente con id '${customer_id}' no existe`, data: [] };
-
         return { statusCode: 200, message: "Clientes obtenidos.", data: response.data };
     } catch (e) {
         console.error(e);
         return { statusCode: 500, message: "Error interno.", data: [] }
     }
 }
-
 
 /**
  * Obtiene clientes desde Odoo según los filtros proporcionados.
@@ -52,7 +50,6 @@ exports.getCustomerByFilters = async (credentials, filters = [], fields = [
     "name",
     "email",
     "phone",
-    "mobile",
     "is_company",
     "company_id",
     "street",
@@ -69,8 +66,8 @@ exports.getCustomerByFilters = async (credentials, filters = [], fields = [
         const { db, uid, password } = credentials;
         const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner", "search_read", [filters], { fields }]);
 
-        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [e.message] }
-        if (response.success === false) return { statusCode: 400, message: "Error obteniendo los clientes.", data: [e.message] }
+        if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] }
+        if (response.success === false) return { statusCode: 400, message: "Error obteniendo los clientes.", data: [response.data.data.message] }
 
         return { statusCode: 200, message: "Clientes obtenidos.", data: response.data };
     } catch (e) {

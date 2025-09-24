@@ -1,6 +1,6 @@
 const odooQuery = require('../helper/odoo.query');
 const bankService = require('./bank.service');
-
+const customerService = require('./customers.service');
 /**
  * Crea una nueva cuenta bancaria en Odoo.
  *
@@ -14,23 +14,35 @@ exports.createBankAccount = async (credentials, data) => {
     try {
         const { db, uid, password } = credentials;
         const bank_account_data = { "acc_number": data.acc_number, "partner_id": data.partner_id, "bank_id": 0 };
+        //Verify partner exists
+        const customer = await customerService.getCustomerById(credentials, data.partner_id);
+        console.log(customer, "--------------------")
+        if (customer.statusCode !== 200) return customer
+
         //If send bank id use it, if not find by name or create new bank
         if (data.hasOwnProperty('bank_id')) {
+            const bank = await bankService.getBank(credentials, [['id', '=', data.bank_id]]);
+            console.log(bank, 111111111111111);
+            if(bank.data.length === 0) return {statusCode: 404, message: `El banco con id '${data.bank_id}' No se encuentra registrado`, data: []}
             bank_account_data.bank_id = data.bank_id
         } else {
             //Find bank by name or create new
             const bank = await bankService.getBank(credentials, [['name', 'ilike', data.bank_name]]);
+            console.log(bank, "++++++++++++++++++++++");
             if (bank.data && bank.data.length === 1) {
                 bank_account_data.bank_id = bank.data[0].id;
             } else {
                 //create new bank and use id
                 const new_bank_id = await bankService.createBank(credentials, { "name": data.bank_name });
+                if (new_bank_id.statusCode != 200) console.error(new_bank_id.data);
+                
                 bank_account_data.bank_id = new_bank_id.data;
             }
         }
-
+        console.log(data);
         //Create bank account 
         const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner.bank", "create", [data], {}]);
+        console.log(response);
         if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] };
         if (response.success === false) return { statusCode: 400, message: "Error creando la cuenta bancaria.", data: [response.data.data.message] };
         const bankAccount = await this.getBankAccountById(credentials, response.data)
