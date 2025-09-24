@@ -20,8 +20,9 @@ const jwt = require('jsonwebtoken');
 exports.login = async (db, username, password) => {
   try {
     const response = await odooQuery.query("common", "login", [db, username, password],);
-    if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] };
-    if (response.success === false || response.data === false) return { statusCode: 400, message: "Error en las credenciales.", data: [response.data.data.message] };
+
+    if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data] };
+    if (response.success === false || response.data === false) return { statusCode: 400, message: "Error en las credenciales.", data: [response.data] };
 
     var token = jwt.sign({
       db,

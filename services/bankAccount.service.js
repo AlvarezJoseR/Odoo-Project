@@ -1,26 +1,35 @@
 const odooQuery = require('../helper/odoo.query');
 const bankService = require('./bank.service');
 
+/**
+ * Crea una nueva cuenta bancaria en Odoo.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {Object} data - Datos de la cuenta bancaria a crear (por ejemplo: { acc_number, partner_id, bank_id, bank_name }).
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (cuenta bancaria creada o mensaje de error).
+ *
+ */
 exports.createBankAccount = async (credentials, data) => {
     try {
         const { db, uid, password } = credentials;
         const bank_account_data = { "acc_number": data.acc_number, "partner_id": data.partner_id, "bank_id": 0 };
-        //If send bank id
+        //If send bank id use it, if not find by name or create new bank
         if (data.hasOwnProperty('bank_id')) {
             bank_account_data.bank_id = data.bank_id
         } else {
-            //Find bank by name
+            //Find bank by name or create new
             const bank = await bankService.getBank(credentials, [['name', 'ilike', data.bank_name]]);
             if (bank.data && bank.data.length === 1) {
                 bank_account_data.bank_id = bank.data[0].id;
             } else {
-                //create new bank
+                //create new bank and use id
                 const new_bank_id = await bankService.createBank(credentials, { "name": data.bank_name });
                 bank_account_data.bank_id = new_bank_id.data;
             }
         }
 
-        //Create bank account
+        //Create bank account 
         const response = await odooQuery.query("object", "execute_kw", [db, uid, password, "res.partner.bank", "create", [data], {}]);
         if (response.success === false && response.error === true) return { statusCode: 500, message: "Error interno.", data: [response.data.data.message] };
         if (response.success === false) return { statusCode: 400, message: "Error creando la cuenta bancaria.", data: [response.data.data.message] };
@@ -33,6 +42,15 @@ exports.createBankAccount = async (credentials, data) => {
     }
 }
 
+/**
+ * Elimina (desactiva) una cuenta bancaria en Odoo por su ID.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {number|string} bank_account_id - ID de la cuenta bancaria a eliminar.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (resultado de la operación o mensaje de error).
+ *
+ */
 exports.deleteBankAcount = async (credentials, bank_account_id) => {
     try {
         const { db, uid, password } = credentials;
@@ -59,6 +77,15 @@ exports.deleteBankAcount = async (credentials, bank_account_id) => {
     }
 }
 
+/**
+ * Obtiene cuentas bancarias desde Odoo según los filtros proporcionados.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {Array} [filters=[]] - Filtros para la búsqueda (por ejemplo: [['acc_number', 'ilike', '123']]).
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (lista de cuentas o mensaje de error).
+ *
+ */
 exports.getBankAccountByFilters = async (credentials, filters = []) => {
     try {
         const { db, uid, password } = credentials;
@@ -72,6 +99,15 @@ exports.getBankAccountByFilters = async (credentials, filters = []) => {
     }
 }
 
+/**
+ * Obtiene una cuenta bancaria por su ID desde Odoo.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {number|string} bankAccountId - ID de la cuenta bancaria a buscar.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (cuenta encontrada o mensaje de error).
+ *
+ */
 exports.getBankAccountById = async (credentials, bankAccountId) => {
     try {
 

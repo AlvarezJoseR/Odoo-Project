@@ -64,7 +64,6 @@ const DbConfig = {
      * @param {string} query - La consulta SQL a ejecutar. Puede contener placeholders (`?`) para parámetros.
      * @param {Array<*>} [params=[]] - Parámetros que reemplazarán los placeholders en la consulta SQL.
      * @returns {Promise<Array<Object>>} - Una promesa que se resuelve con un array de filas del resultado.
-     * @throws {Error} - Lanza un error si la consulta falla.
      *
      * @example
      * const registros = await executeQuery(

@@ -7,6 +7,15 @@ const createCustomerSchema = require('../schemas/Customer/create.customer.schema
 //Services
 const bankAccountService = require('./bankAccount.service.js');
 
+/**
+ * Obtiene un cliente por su ID desde Odoo.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {number|string} customer_id - ID del cliente a buscar.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (cliente encontrado o mensaje de error).
+ *
+ */
 exports.getCustomerById = async (credentials, customer_id) => {
     try {
         const id = Number(customer_id);
@@ -26,9 +35,17 @@ exports.getCustomerById = async (credentials, customer_id) => {
         return { statusCode: 500, message: "Error interno.", data: [] }
     }
 }
+
+
 /**
- *  Returns customers info 
- * @returns all customers info
+ * Obtiene clientes desde Odoo según los filtros proporcionados.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {Array} [filters=[]] - Filtros para la búsqueda (por ejemplo: [['name', 'ilike', 'Cliente']]).
+ * @param {Array} [fields] - Campos a obtener de Odoo.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (lista de clientes o mensaje de error).
+ *
  */
 exports.getCustomerByFilters = async (credentials, filters = [], fields = [
     "id",
@@ -62,9 +79,15 @@ exports.getCustomerByFilters = async (credentials, filters = [], fields = [
     }
 }
 
+
 /**
- *  Create a new customer
- * @returns info customer created
+ * Crea un nuevo cliente en Odoo y, si corresponde, sus cuentas bancarias asociadas.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {Object} data - Datos del cliente a crear (puede incluir bank_account como array).
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (cliente creado o mensaje de error).
+ *
  */
 exports.createCustomer = async (credentials, data) => {
     try {
@@ -105,9 +128,15 @@ exports.createCustomer = async (credentials, data) => {
     }
 }
 
+
 /**
- *  Delete a customer
- * @returns A message if user deleted suscessfully
+ * Elimina (desactiva) un cliente en Odoo por su ID.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {number|string} customer_id - ID del cliente a eliminar.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (resultado de la operación o mensaje de error).
+ *
  */
 exports.deleteCustomer = async (credentials, customer_id) => {
     try {
@@ -116,7 +145,7 @@ exports.deleteCustomer = async (credentials, customer_id) => {
         const id = Number(customer_id);
 
         if (isNaN(id)) {
-            return { statusCode: 400, message: `El id ${customer_id} no es un id valido.`, data: [] };
+            return { statusCode: 400, message: `El id '${customer_id}' no es un id valido.`, data: [] };
         }
 
         //Verify customer exists
@@ -135,9 +164,16 @@ exports.deleteCustomer = async (credentials, customer_id) => {
     }
 }
 
+
 /**
- *  Update a customer
- * @returns The updaded customer info
+ * Actualiza un cliente en Odoo por su ID.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {number|string} customer_id - ID del cliente a actualizar.
+ * @param {Object} customer_data - Datos a actualizar del cliente.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (cliente actualizado o mensaje de error).
+ *
  */
 exports.updateCustomer = async (credentials, customer_id, customer_data = {}) => {
     try {
@@ -145,7 +181,7 @@ exports.updateCustomer = async (credentials, customer_id, customer_data = {}) =>
         //Verify valid id
         const id = Number(customer_id);
         if (isNaN(id)) {
-            return { statusCode: 400, message: `El id ${customer_id} no es un id valido.`, data: [] };
+            return { statusCode: 400, message: `El id '${customer_id}' no es un id valido.`, data: [] };
         }
 
         //Verify customer exists

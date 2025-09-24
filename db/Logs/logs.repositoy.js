@@ -21,9 +21,6 @@ const logsRepository = {
             `;
 
             // const query = `INSERT INTO odoo_request_logs (service, method, args, response, created_at ) VALUES (?, ?, ?, ?, NOW())`
-            //
-            //
-
 
             const result = await dbConnection.executeQuery(query, logData);
             return result;
@@ -35,8 +32,6 @@ const logsRepository = {
                 message: "Error al insertar el log en la base de datos.",
                 data: [e],
             };
-
-
         }
     },
 

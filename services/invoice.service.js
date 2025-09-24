@@ -1,6 +1,14 @@
 const productService = require('./product.service');
 const odooQuery = require('../helper/odoo.query');
 
+/**
+ * Crea una nueva factura en Odoo y, si corresponde, agrega productos asociados.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {Object} data - Datos de la factura a crear (puede incluir products como array).
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (factura creada o mensaje de error).
+ */
 exports.createInvoice = async (credentials, data) => {
     try {
         const invoice_data = {};
@@ -36,6 +44,14 @@ exports.createInvoice = async (credentials, data) => {
     }
 }
 
+/**
+ * Obtiene una factura por su ID desde Odoo.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {number|string} invoice_id - ID de la factura a buscar.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (factura encontrada o mensaje de error).
+ */
 exports.getInvoiceById = async (credentials, invoice_id) => {
     try {
         const { db, uid, password } = credentials;
@@ -61,6 +77,15 @@ exports.getInvoiceById = async (credentials, invoice_id) => {
     }
 }
 
+/**
+ * Agrega un producto a una factura en Odoo.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {number|string} invoice_id - ID de la factura.
+ * @param {Object} product_invoice_data - Datos del producto a agregar a la factura.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (resultado de la operación o mensaje de error).
+ */
 exports.addProductInvoice = async (credentials, invoice_id, product_invoice_data) => {
     try {
         const { db, uid, password } = credentials;
@@ -99,6 +124,15 @@ exports.addProductInvoice = async (credentials, invoice_id, product_invoice_data
     }
 }
 
+/**
+ * Elimina un producto de una factura en Odoo.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {number|string} invoice_id - ID de la factura.
+ * @param {number|string} product_invoice_id - ID del producto en la factura a eliminar.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (resultado de la operación o mensaje de error).
+ */
 exports.deleteProductInvoice = async (credentials, invoice_id, product_invoice_id) => {
     try {
         const { db, uid, password } = credentials;
@@ -124,6 +158,14 @@ exports.deleteProductInvoice = async (credentials, invoice_id, product_invoice_i
     }
 }
 
+/**
+ * Confirma una factura en Odoo por su ID.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {number|string} invoice_id - ID de la factura a confirmar.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (resultado de la operación o mensaje de error).
+ */
 exports.confirmInvoice = async (credentials, invoice_id) => {
     try {
         const { db, uid, password } = credentials;

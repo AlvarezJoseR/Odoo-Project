@@ -1,5 +1,14 @@
 const odooQuery = require('../helper/odoo.query');
 
+/**
+ * Crea un nuevo banco en Odoo.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {Object} data - Datos del banco a crear (por ejemplo: { name: 'Banco Ejemplo' }).
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (id del banco creado o mensaje de error).
+ *
+ */
 exports.createBank = async (credentials, data) => {
     try {
         const {db, uid, password} = credentials;
@@ -14,6 +23,15 @@ exports.createBank = async (credentials, data) => {
     }
 }
 
+/**
+ * Obtiene bancos desde Odoo según los filtros proporcionados.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {Array} [filters=[]] - Filtros para la búsqueda (por ejemplo: [['name', 'ilike', 'Banco']]).
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (lista de bancos o mensaje de error).
+ *
+ */
 exports.getBank = async (credentials, filters = []) => {
     try {
         const {db, uid, password} = credentials;

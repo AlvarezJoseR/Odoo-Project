@@ -10,7 +10,6 @@ const logRepository = require('../db/Logs/logs.repositoy.js');
  *    - Login: [db, username, password]
  *    - Execute_kw: [db, uid, password, model, modelMethod, params, kwargs]
  * @returns {Promise<*>} Resultado devuelto por Odoo.
- * @throws {Error} Si Odoo responde con error o hay problemas de conexión.
  */
 exports.query = async (
     service = 'object',

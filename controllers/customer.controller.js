@@ -7,7 +7,6 @@ exports.createCustomer = async (req, res) => {
 
         //Create customer
         const response = await customerService.createCustomer(credentials, customer_data);
-        logsRepository.createLogs([req.originalUrl, response.statusCode, JSON.stringify(response), req.method]);
         res.status(response.statusCode).json(response);
     } catch (e) {
         const status = e.statusCode;

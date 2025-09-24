@@ -1,5 +1,13 @@
 const odooQuery = require('../helper/odoo.query');
 
+/**
+ * Crea un nuevo producto en Odoo.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {Object} data - Datos del producto a crear.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (producto creado o mensaje de error).
+ */
 exports.createProduct = async (credentials, data) => {
     try {
         const { db, uid, password } = credentials;
@@ -16,6 +24,14 @@ exports.createProduct = async (credentials, data) => {
     }
 }
 
+/**
+ * Elimina (desactiva) un producto en Odoo por su ID.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {number|string} product_id - ID del producto a eliminar.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (resultado de la operación o mensaje de error).
+ */
 exports.deleteProduct = async (credentials, product_id) => {
     try {
         const { db, uid, password } = credentials;
@@ -43,6 +59,14 @@ exports.deleteProduct = async (credentials, product_id) => {
     }
 }
 
+/**
+ * Obtiene productos desde Odoo según los filtros proporcionados.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {Array} [filters=[]] - Filtros para la búsqueda (por ejemplo: [['name', 'ilike', 'Producto']]).
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (lista de productos o mensaje de error).
+ */
 exports.getProductsByFilters = async (credentials, filters = []) => {
     try {
         const { db, uid, password } = credentials;
@@ -57,6 +81,15 @@ exports.getProductsByFilters = async (credentials, filters = []) => {
     }
 }
 
+/**
+ * Actualiza un producto en Odoo por su ID.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {number|string} product_id - ID del producto a actualizar.
+ * @param {Object} product_data - Datos a actualizar del producto.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (producto actualizado o mensaje de error).
+ */
 exports.updateProduct = async (credentials, product_id, product_data = {}) => {
     try {
         const { db, uid, password } = credentials;
@@ -84,6 +117,14 @@ exports.updateProduct = async (credentials, product_id, product_data = {}) => {
     }
 }
 
+/**
+ * Obtiene un producto por su ID desde Odoo.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {number|string} product_id - ID del producto a buscar.
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (producto encontrado o mensaje de error).
+ */
 exports.getProductById = async (credentials, product_id) => {
     try {
         const id = Number(product_id);

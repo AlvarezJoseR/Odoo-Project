@@ -1,5 +1,14 @@
 const odooQuery = require('../helper/odoo.query');
 
+/**
+ * Obtiene todas las compañías desde Odoo según los filtros proporcionados.
+ *
+ * @async
+ * @param {Object} credentials - Credenciales de acceso a Odoo (debe incluir db, uid y password).
+ * @param {Array} [filters=[]] - Filtros para la búsqueda (por ejemplo: [['name', 'ilike', 'Compañía']]).
+ * @returns {Promise<Object>} Objeto con statusCode, message y data (lista de compañías o mensaje de error).
+ *
+ */
 exports.getAllCompanies = async (credentials, filters = []) => {
     try {
         const { db, uid, password } = credentials;
